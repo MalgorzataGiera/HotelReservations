@@ -5,8 +5,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp_Hotel"
         mc:Ignorable="d"
-        Title="ShowReservations" Height="450" Width="800">
-    <Grid>
-        
+        Title="ShowReservations" Height="675" Width="1200">
+    <Grid Background="#FF002AAD">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="45" />
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBox Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,38,0" Background="#FF2044B6" BorderThickness="0" Height="30" Width="70" FontSize="18" VerticalContentAlignment="Center">Sortuj</TextBox>
+        <ComboBox Grid.Column="1" x:Name="sortOptions" Style="{StaticResource listStyle}" SelectionChanged="ComboBox_SelectionChanged" BorderBrush="{x:Null}" Opacity="0.132" Background="{x:Null}">
+            <ComboBox.Items>
+                <ComboBoxItem>adding order ASC</ComboBoxItem>
+                <ComboBoxItem>adding order DESC</ComboBoxItem>
+                <ComboBoxItem>last name ASC</ComboBoxItem>
+                <ComboBoxItem>last name DESC</ComboBoxItem>
+                <ComboBoxItem>arrival date ASC</ComboBoxItem>
+                <ComboBoxItem>arrival date DESC</ComboBoxItem>
+                <ComboBoxItem>leaving date ASC</ComboBoxItem>
+                <ComboBoxItem>leaving date DESC</ComboBoxItem>
+            </ComboBox.Items>
+            
+        </ComboBox>
+        <ListBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="reservationsListBox" BorderBrush="#FF002AAD"/>
+
     </Grid>
 </Window>

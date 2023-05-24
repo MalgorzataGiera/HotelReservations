@@ -32,6 +32,7 @@ namespace WpfApp_Hotel
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
             timer.Start();
+            
 
         }
         private void Timer_Tick(object sender, EventArgs e)
