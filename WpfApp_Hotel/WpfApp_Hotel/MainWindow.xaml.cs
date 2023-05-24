@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace WpfApp_Hotel
 {
@@ -21,24 +23,37 @@ namespace WpfApp_Hotel
     /// </summary>
     public partial class MainWindow : Window
     {
+        private DispatcherTimer timer;
         public MainWindow()
         {
             InitializeComponent();
 
-            string connectionString = "data source=localhost;initial catalog=hotel;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
+            timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += Timer_Tick;
+            timer.Start();
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                try
-                {
-                    connection.Open();
-                    MessageBox.Show("Połączono z bazą danych");
-                }
-                catch (SqlException)
-                {
-                    MessageBox.Show("Nie udało się połączyć z bazą danych");
-                }
-            }
+        }
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            // Pobierz aktualną datę i godzinę
+            DateTime currentDateTime = DateTime.Now;
+
+            // Aktualizuj zawartość etykiety
+            date.Content = currentDateTime.ToString();
+        }
+
+        private void NewReserv(object sender, RoutedEventArgs e)
+        {
+           
+            NewReservation reservationsWindow = new NewReservation();
+            reservationsWindow.Show();
+        }
+
+        private void ShowReservs(object sender, RoutedEventArgs e)
+        {
+            ShowReservations reservationsWindow = new ShowReservations();
+            reservationsWindow.Show();
         }
     }
 }
