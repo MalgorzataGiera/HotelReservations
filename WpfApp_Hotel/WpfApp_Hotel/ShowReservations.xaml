@@ -11,8 +11,8 @@
             <RowDefinition Height="45" />
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBox Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,38,0" Background="#FF2044B6" BorderThickness="0" Height="30" Width="70" FontSize="18" VerticalContentAlignment="Center">Sortuj</TextBox>
-        <ComboBox Grid.Column="1" x:Name="sortOptions" Style="{StaticResource listStyle}" SelectionChanged="ComboBox_SelectionChanged" BorderBrush="{x:Null}" Opacity="0.132" Background="{x:Null}">
+        
+        <ComboBox Grid.Column="1" x:Name="sortOptions" Style="{StaticResource listStyle}" SelectionChanged="ComboBox_SelectionChanged">
             <ComboBox.Items>
                 <ComboBoxItem>adding order ASC</ComboBoxItem>
                 <ComboBoxItem>adding order DESC</ComboBoxItem>
@@ -25,7 +25,8 @@
             </ComboBox.Items>
             
         </ComboBox>
-        <ListBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="reservationsListBox" BorderBrush="#FF002AAD"/>
+        <ListBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="reservationsListBox" BorderBrush="#FF002AAD" MouseDoubleClick="reservationsListBox_Click"/>
+
 
     </Grid>
 </Window>
