@@ -26,13 +26,32 @@
             <Setter Property="VerticalAlignment" Value="Bottom"/>
         </Style>
 
-        <Style x:Key="listStyle" TargetType="{x:Type ComboBox}">
-            <Setter Property="MinHeight" Value="30"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="HorizontalAlignment" Value="Right"/>
-            <Setter Property="Margin" Value="0,0,10,0"/>
-
+        <Style x:Key="headerSideWindowLabelStyle" TargetType="{x:Type Label}">
+            <Setter Property="FontSize" Value="25"/>
+            <Setter Property="Foreground" Value="WhiteSmoke"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+            <Setter Property="Background" Value="#FF002AAD"/>
+            <Setter Property="Margin" Value="0,0,20,0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
         </Style>
+
+        <Style TargetType="DataGrid">
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#FFD5D5D5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="CanUserReorderColumns" Value="False"/>
+            <Setter Property="CanUserResizeColumns" Value="False"/>
+        </Style>
+
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="MinHeight" Value="30"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>            
+        </Style>
+
+
     </Application.Resources>
 </Application>

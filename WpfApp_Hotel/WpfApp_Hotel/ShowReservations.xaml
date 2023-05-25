@@ -6,26 +6,22 @@
         xmlns:local="clr-namespace:WpfApp_Hotel"
         mc:Ignorable="d"
         Title="ShowReservations" Height="675" Width="1200">
-    <Grid Background="#FF002AAD">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="45" />
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        
-        <ComboBox Grid.Column="1" x:Name="sortOptions" Style="{StaticResource listStyle}" SelectionChanged="ComboBox_SelectionChanged">
-            <ComboBox.Items>
-                <ComboBoxItem>adding order ASC</ComboBoxItem>
-                <ComboBoxItem>adding order DESC</ComboBoxItem>
-                <ComboBoxItem>last name ASC</ComboBoxItem>
-                <ComboBoxItem>last name DESC</ComboBoxItem>
-                <ComboBoxItem>arrival date ASC</ComboBoxItem>
-                <ComboBoxItem>arrival date DESC</ComboBoxItem>
-                <ComboBoxItem>leaving date ASC</ComboBoxItem>
-                <ComboBoxItem>leaving date DESC</ComboBoxItem>
-            </ComboBox.Items>
-            
-        </ComboBox>
-        <ListBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="reservationsListBox" BorderBrush="#FF002AAD" MouseDoubleClick="reservationsListBox_Click"/>
+
+
+    <Grid>
+        <DataGrid x:Name="dataGrid" AutoGenerateColumns="False" IsReadOnly="True" MouseDoubleClick="reservationsListBox_Click"  >
+            <DataGrid.FocusVisualStyle>
+                <Style/>
+            </DataGrid.FocusVisualStyle>
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Width ="20*" Header="Last Name" Binding="{Binding LastName}"/>
+                <DataGridTextColumn Width ="20*" Header="First Name" Binding="{Binding FirstName}"/>
+                <DataGridTextColumn Width ="20*" Header="Check-In Date" Binding="{Binding CheckInDate}" />
+                <DataGridTextColumn Width ="20*" Header="Check-Out Date" Binding="{Binding CheckOutDate}" />
+                <DataGridTextColumn Width ="20*" Header="Reservation Number" Binding="{Binding ReservationID}" />
+            </DataGrid.Columns>
+        </DataGrid>
 
 
     </Grid>
