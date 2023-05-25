@@ -8,12 +8,27 @@
         Title="ShowReservations" Height="675" Width="1200">
 
 
-    <Grid>
-        <DataGrid x:Name="dataGrid" AutoGenerateColumns="False" IsReadOnly="True" MouseDoubleClick="reservationsListBox_Click"  >
-            <DataGrid.FocusVisualStyle>
-                <Style/>
-            </DataGrid.FocusVisualStyle>
+    <Grid Background="#FF002AAD">
+        <Grid.RowDefinitions >
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
 
+        <TextBox Style="{StaticResource textBoxQuery}"  x:Name="textBoxForSearch"
+                 Text="Search for guest name..."
+         GotFocus="TextBox_GotFocus" 
+         LostFocus="TextBox_LostFocus">
+        </TextBox>
+
+        <Button Grid.Column="1" Click="Search_Click" Style="{StaticResource searchStyle}">
+            <Image Source="/searchIcon.png"/>
+        </Button>
+        
+        <DataGrid Grid.Row="1" Grid.ColumnSpan="2" x:Name="dataGrid" AutoGenerateColumns="False" IsReadOnly="True" MouseDoubleClick="reservationsListBox_Click"  >
             <DataGrid.Columns>
                 <DataGridTextColumn Width ="20*" Header="Last Name" Binding="{Binding LastName}"/>
                 <DataGridTextColumn Width ="20*" Header="First Name" Binding="{Binding FirstName}"/>

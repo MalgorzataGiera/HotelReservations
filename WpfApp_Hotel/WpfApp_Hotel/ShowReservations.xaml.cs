@@ -26,7 +26,11 @@ namespace WpfApp_Hotel
     {
         private List<string> reservationsData = new List<string>();
         private string connectionString = "data source=localhost;initial catalog=hotel;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
-
+        private string[] userQuery;
+        private DataTable dataTableDeafault;
+        /// <summary>
+        /// Wyświetla wszystkie rezerwacje
+        /// </summary>
         public ShowReservations()
         {
             InitializeComponent();
@@ -35,13 +39,14 @@ namespace WpfApp_Hotel
                 try
                 {
                     connection.Open();
-                    string query = "SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID";
+                    // Zapytanie SQL do pobrania najważniejszych informacji o rezerwacji
+                    string query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID";
                     SqlCommand command = new SqlCommand(query, connection);
                     SqlDataReader reader = command.ExecuteReader();
 
-                    DataTable dataTable = new DataTable();
-                    dataTable.Load(reader);
-                    dataGrid.ItemsSource = dataTable.DefaultView;
+                    dataTableDeafault = new DataTable();
+                    dataTableDeafault.Load(reader);
+                    dataGrid.ItemsSource = dataTableDeafault.DefaultView;
 
                     reader.Close();
                 }
@@ -52,8 +57,11 @@ namespace WpfApp_Hotel
             }
 
         }
-
-
+        /// <summary>
+        /// Wyświetla szczegółowe informacje o rezeracji
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void reservationsListBox_Click(object sender, MouseButtonEventArgs e)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -68,11 +76,7 @@ namespace WpfApp_Hotel
                         string columnName = "ReservationID";
                         resID = rowView[columnName].ToString();
 
-                        MessageBox.Show(resID);
-
-
-
-                        // Zapytanie SQL do pobrania wszystkich informacji o rezerwacji
+                        // Zapytanie SQL do pobrania wszystkich szczegółowych informacji o rezerwacji
                         string query = $"SELECT r.*, g.FirstName AS gFirstName, g.LastName AS gLastName, e.FirstName AS eFirstName, e.LastName AS eLastName FROM Reservations r JOIN Guests g ON r.GuestID = g.GuestID JOIN Employees e ON r.EmployeeID = e.EmployeeID WHERE r.ReservationID = {resID}";
 
                         SqlCommand command = new SqlCommand(query, connection);
@@ -110,7 +114,81 @@ namespace WpfApp_Hotel
                 }
             }
         }
-        
+        /// <summary>
+        /// Reaguje na kliknięcie text boxa
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+            textBox.Background = Brushes.WhiteSmoke;
+            textBox.Foreground = Brushes.Black;
+            textBox.BorderThickness = new Thickness(0);
+            if (textBox.Text == "Search for guest name...")
+                textBox.Text = string.Empty;
+        }
 
+        /// <summary>
+        /// Reaguje na opuszczenie text boxa
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = (TextBox)sender;
+            textBox.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF394DA0"));
+            textBox.Foreground = Brushes.WhiteSmoke;
+            textBox.BorderThickness = new Thickness(3);
+            if (string.IsNullOrWhiteSpace(textBox.Text))
+                textBox.Text = "Search for guest name...";
+            else
+            {
+                userQuery = textBox.Text.Split(' ');
+                if (userQuery.Length > 2)
+                {
+                    MessageBox.Show("no matching results found");
+                    textBox.Text = "Search for guest name...";
+                    //Przywroć pierwotny wygląd tabeli
+                    dataGrid.ItemsSource = dataTableDeafault.DefaultView;
+                } 
+            }
+                
+        }
+
+        private void Search_Click(object sender, RoutedEventArgs e)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    // Zapytanie SQL do pobrania najważniejszych informacji o rezerwacji
+                    string query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE g.LastName LIKE '{userQuery[0]}%' OR g.FirstName LIKE '{userQuery[0]}%'";
+                    SqlCommand command = new SqlCommand(query, connection);
+                    SqlDataReader reader = command.ExecuteReader();
+
+                    DataTable dataTable = new DataTable();
+                    dataTable.Load(reader);
+                    dataGrid.ItemsSource = dataTable.DefaultView;
+
+                    if (dataGrid.Items.Count < 1)
+                    {
+                        MessageBox.Show("no matching results found");
+                        dataGrid.ItemsSource = dataTableDeafault.DefaultView;
+                        textBoxForSearch.Text = "Search for guest name...";
+                    }
+                        
+
+                    reader.Close();
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("Wystąpił błąd podczas pobierania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+
+            
+        }
     }
 }
