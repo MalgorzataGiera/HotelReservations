@@ -50,12 +50,13 @@
         </TextBlock>
 
         <!-- wprowadzanie danych -->
-        <TextBox Grid.Column="1" Style="{StaticResource textBoxInsertValue_Style}"/>
+        <TextBox Grid.Column="1" x:Name="_name" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_name_LostFocus" GotFocus="_name_GotFocus"/>
 
 
-        <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource textBoxInsertValue_Style}"/>
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="_lastName" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_lastName_LostFocus" GotFocus="_lastName_GotFocus"/>
 
-        <DatePicker Grid.Row="2"  Grid.Column="1" Width="200">
+        <DatePicker Grid.Row="2"  Grid.Column="1" Width="200" x:Name="_checkIn" 
+                    Loaded="DatePicker1_Loaded">
             <DatePicker.Resources>
                 <Style TargetType="TextBox">
                     <Setter Property="IsHitTestVisible" Value="False" />
@@ -63,7 +64,9 @@
                 </Style>
             </DatePicker.Resources>
         </DatePicker>
-        <DatePicker Grid.Row="3" Grid.Column="1" Width="200">
+
+        <DatePicker Grid.Row="3" Grid.Column="1" Width="200" x:Name="_checkOut"
+                    Loaded="DatePicker2_Loaded">
             <DatePicker.Resources>
                 <Style TargetType="TextBox">
                     <Setter Property="IsHitTestVisible" Value="False" />
@@ -72,15 +75,15 @@
             </DatePicker.Resources>
         </DatePicker>
 
-        <TextBox Grid.Row="4" Grid.Column="1" Style="{StaticResource textBoxInsertValue_Style}"/>
+        <TextBox Grid.Row="4" Grid.Column="1" x:Name="_room" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_room_LostFocus" GotFocus="_room_GotFocus"/>
 
-        <TextBox Grid.Row="5" Grid.Column="1" Style="{StaticResource textBoxInsertValue_Style}"/>
+        <TextBox Grid.Row="5" Grid.Column="1" x:Name="_phone" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_phone_LostFocus" GotFocus="_phone_GotFocus"/>
 
-        <TextBox Grid.Row="6" Grid.Column="1" Style="{StaticResource textBoxInsertValue_Style}"/>
+        <TextBox Grid.Row="6" Grid.Column="1" x:Name="_mail" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_mail_LostFocus" GotFocus="_mail_GotFocus"/>
 
-        <TextBox Grid.Row="7" Grid.Column="1" Style="{StaticResource textBoxInsertValue_Style}"/>
+        <TextBox Grid.Row="7" Grid.Column="1" x:Name="_employee" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_employee_LostFocus" GotFocus="_employee_GotFocus"/>
 
-        <Button Grid.Row="8" Grid.Column="1" Content="Add" Style="{StaticResource submitButtonStyle}"/>
+        <Button Grid.Row="8" Grid.Column="1" Content="Add" Style="{StaticResource submitButtonStyle}" Click="AddReservation"/>
 
     </Grid>
 </Window>
