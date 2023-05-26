@@ -26,7 +26,7 @@ namespace WpfApp_Hotel
     public partial class ShowReservations : Window
     {
         private List<string> reservationsData = new List<string>();
-        private string connectionString = "data source=localhost;initial catalog=hotel;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
+        private string connectionString = "data source=localhost;initial catalog=hotel2;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
         private string[] userQuery;
         private DataTable dataTableDeafault;
         private string dateStart;

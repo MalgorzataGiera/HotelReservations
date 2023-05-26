@@ -93,7 +93,7 @@
             </Setter>
         </Style>
 
-        <Style x:Key="dateLabel" TargetType="Label">
+        <Style x:Key="dateLabel" TargetType="{x:Type Label}">
             <Setter Property="Background" Value="#FF002AAD"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="HorizontalAlignment" Value="Right"/>
@@ -102,6 +102,33 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Margin" Value="3,0,3,0"/>
             <Setter Property="Foreground" Value="WhiteSmoke"/>
+        </Style>
+
+        <Style x:Key="textBlock_AddReservation_Style" TargetType="{x:Type TextBlock}">
+            <Setter Property="Width" Value="auto"/>
+            <Setter Property="Height" Value="23"/>
+            <Setter Property="Margin" Value="5,3,5,3"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Right"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <Style x:Key="textBoxInsertValue_Style" TargetType="{x:Type TextBox}">
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="Margin" Value="0,5,0,5"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Top"/>
+            <Setter Property="Padding" Value="2,2,0,0"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <Style x:Key="submitButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="Width" Value="50"/>
+            <Setter Property="Height" Value="25"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Margin" Value="0,0,15,0"/>
         </Style>
     </Application.Resources>
 </Application>

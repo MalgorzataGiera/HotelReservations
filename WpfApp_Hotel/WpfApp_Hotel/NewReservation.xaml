@@ -5,8 +5,82 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp_Hotel"
         mc:Ignorable="d"
-        Title="NewReservation" Height="450" Width="800">
-    <Grid>
-        
+        Title="NewReservation" Height="450" Width="350">
+    <Grid Margin="10,20,10,20">
+        <Grid.RowDefinitions>
+            <RowDefinition/> <!-- imie -->
+            <RowDefinition/>            <!-- nazwisko -->
+            <RowDefinition/>            <!-- data od -->
+            <RowDefinition/>            <!-- do -->
+            <RowDefinition/> <!-- pokoj -->
+            <RowDefinition/> <!-- tel -->
+            <RowDefinition/> <!-- mail -->
+            <RowDefinition/> <!-- pracownik -->
+            <RowDefinition/> <!-- pracownik -->
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Style="{StaticResource textBlock_AddReservation_Style}">
+            First name:
+        </TextBlock>
+        <TextBlock Grid.Row="1" Style="{StaticResource textBlock_AddReservation_Style}">
+            Last name:
+        </TextBlock>
+        <TextBlock Grid.Row="2" Style="{StaticResource textBlock_AddReservation_Style}">
+            From:
+        </TextBlock>
+        <TextBlock Grid.Row="3" Style="{StaticResource textBlock_AddReservation_Style}">
+            To:
+        </TextBlock>
+
+        <TextBlock Grid.Row="4" Style="{StaticResource textBlock_AddReservation_Style}">
+            Room: 
+        </TextBlock>
+        <TextBlock Grid.Row="5" Style="{StaticResource textBlock_AddReservation_Style}">
+            Phone nr: 
+        </TextBlock>
+        <TextBlock Grid.Row="6" Style="{StaticResource textBlock_AddReservation_Style}">
+            E-mail: 
+        </TextBlock>
+        <TextBlock Grid.Row="7" Style="{StaticResource textBlock_AddReservation_Style}">
+            Taken by:
+        </TextBlock>
+
+        <!-- wprowadzanie danych -->
+        <TextBox Grid.Column="1" Style="{StaticResource textBoxInsertValue_Style}"/>
+
+
+        <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource textBoxInsertValue_Style}"/>
+
+        <DatePicker Grid.Row="2"  Grid.Column="1" Width="200">
+            <DatePicker.Resources>
+                <Style TargetType="TextBox">
+                    <Setter Property="IsHitTestVisible" Value="False" />
+                    
+                </Style>
+            </DatePicker.Resources>
+        </DatePicker>
+        <DatePicker Grid.Row="3" Grid.Column="1" Width="200">
+            <DatePicker.Resources>
+                <Style TargetType="TextBox">
+                    <Setter Property="IsHitTestVisible" Value="False" />
+
+                </Style>
+            </DatePicker.Resources>
+        </DatePicker>
+
+        <TextBox Grid.Row="4" Grid.Column="1" Style="{StaticResource textBoxInsertValue_Style}"/>
+
+        <TextBox Grid.Row="5" Grid.Column="1" Style="{StaticResource textBoxInsertValue_Style}"/>
+
+        <TextBox Grid.Row="6" Grid.Column="1" Style="{StaticResource textBoxInsertValue_Style}"/>
+
+        <TextBox Grid.Row="7" Grid.Column="1" Style="{StaticResource textBoxInsertValue_Style}"/>
+
+        <Button Grid.Row="8" Grid.Column="1" Content="Add" Style="{StaticResource submitButtonStyle}"/>
+
     </Grid>
 </Window>

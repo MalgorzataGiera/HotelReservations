@@ -22,6 +22,9 @@ namespace WpfApp_Hotel
         public NewReservation()
         {
             InitializeComponent();
+            
         }
+      
+
     }
 }
