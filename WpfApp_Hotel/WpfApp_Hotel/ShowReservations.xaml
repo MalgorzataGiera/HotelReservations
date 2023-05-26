@@ -44,8 +44,8 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Width ="20*" Header="Last Name" Binding="{Binding LastName}"/>
                 <DataGridTextColumn Width ="20*" Header="First Name" Binding="{Binding FirstName}"/>
-                <DataGridTextColumn Width ="20*" Header="Check-In Date" Binding="{Binding CheckInDate}" />
-                <DataGridTextColumn Width ="20*" Header="Check-Out Date" Binding="{Binding CheckOutDate}" />
+                <DataGridTextColumn Width ="20*" Header="Check-In Date" Binding="{Binding CheckInDate, StringFormat=yyyy.MM.dd}" />
+                <DataGridTextColumn Width ="20*" Header="Check-Out Date" Binding="{Binding CheckOutDate, StringFormat=yyyy.MM.dd}" />
                 <DataGridTextColumn Width ="20*" Header="Reservation Number" Binding="{Binding ReservationID}" />
             </DataGrid.Columns>
         </DataGrid>

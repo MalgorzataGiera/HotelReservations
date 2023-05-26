@@ -59,6 +59,7 @@ namespace WpfApp_Hotel
                     dataTableDeafault.Load(reader);
                     dataGrid.ItemsSource = dataTableDeafault.DefaultView;
 
+
                     reader.Close();
                 }
                 catch (SqlException ex)
