@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -209,7 +210,6 @@ namespace WpfApp_Hotel
                     if (dataGrid.Items.Count < 1)
                     {
                         MessageBox.Show("no matching results found");
-                        //textBoxForSearch.Text = "Search for guest name...";
                     }
 
                     reader.Close();

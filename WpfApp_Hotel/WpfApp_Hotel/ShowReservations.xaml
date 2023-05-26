@@ -34,11 +34,23 @@
 
         <Label Grid.Column="2" Style="{StaticResource dateLabel}" Content="Search from: "/>
         <DatePicker Grid.Column="3" x:Name="datePicker1"
-                    Loaded="DatePicker1_Loaded"  SelectedDateChanged="DatePicker_StartDate_SelectedDateChanged" />
+                    Loaded="DatePicker1_Loaded"  SelectedDateChanged="DatePicker_StartDate_SelectedDateChanged">
+            <DatePicker.Resources>
+                <Style TargetType="TextBox">
+                    <Setter Property="IsHitTestVisible" Value="False" />
+                </Style>
+            </DatePicker.Resources>
+        </DatePicker>
         
         <Label Grid.Column="4" Style="{StaticResource dateLabel}" Content="to: "/>
         <DatePicker Grid.Column="5" x:Name="datePicker2" 
-                    Loaded="DatePicker2_Loaded" SelectedDateChanged="DatePicker_EndDate_SelectedDateChanged" />
+                    Loaded="DatePicker2_Loaded" SelectedDateChanged="DatePicker_EndDate_SelectedDateChanged">
+            <DatePicker.Resources>
+                <Style TargetType="TextBox">
+                    <Setter Property="IsHitTestVisible" Value="False" />
+                </Style>
+            </DatePicker.Resources>
+        </DatePicker>
 
         <DataGrid Grid.Row="1" Grid.ColumnSpan="6" x:Name="dataGrid" AutoGenerateColumns="False" IsReadOnly="True" MouseDoubleClick="reservationsListBox_Click"  >
             <DataGrid.Columns>
@@ -49,7 +61,6 @@
                 <DataGridTextColumn Width ="20*" Header="Reservation Number" Binding="{Binding ReservationID}" />
             </DataGrid.Columns>
         </DataGrid>
-        <DatePicker Grid.Column="2" HorizontalAlignment="Left" Margin="798,-58,0,0" VerticalAlignment="Top"/>
 
 
     </Grid>
