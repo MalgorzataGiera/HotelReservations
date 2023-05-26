@@ -137,7 +137,11 @@ namespace WpfApp_Hotel
             textBox.Foreground = Brushes.Black;
             textBox.BorderThickness = new Thickness(0);
             if (textBox.Text == "Search for guest name...")
+            {
                 textBox.Text = string.Empty;
+                dataGrid.ItemsSource = dataTableDeafault.DefaultView;
+            }
+                
         }
 
         /// <summary>
@@ -152,7 +156,13 @@ namespace WpfApp_Hotel
             textBox.Foreground = Brushes.WhiteSmoke;
             textBox.BorderThickness = new Thickness(3);
             if (string.IsNullOrWhiteSpace(textBox.Text))
+            {
+
+                userQuery = null;
                 textBox.Text = "Search for guest name...";
+                dataGrid.ItemsSource = dataTableDeafault.DefaultView;
+            }
+                
             else
             {
                 userQuery = textBox.Text.Split(' ');
@@ -178,9 +188,17 @@ namespace WpfApp_Hotel
             {
                 try
                 {
+                    string query;
                     connection.Open();
                     // Zapytanie SQL do pobrania najważniejszych informacji o rezerwacji
-                    string query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE g.LastName LIKE '{userQuery[0]}%' OR g.FirstName LIKE '{userQuery[0]}%'";
+                    if (userQuery == null || userQuery.Length == 0)
+                         query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID";
+                    
+                    else
+                    {
+                        query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE g.LastName LIKE '{userQuery[0]}%' OR g.FirstName LIKE '{userQuery[0]}%'";
+                    }
+                    
                     SqlCommand command = new SqlCommand(query, connection);
                     SqlDataReader reader = command.ExecuteReader();
 
