@@ -28,12 +28,23 @@ namespace WpfApp_Hotel
         private string connectionString = "data source=localhost;initial catalog=hotel;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
         private string[] userQuery;
         private DataTable dataTableDeafault;
+        private string dateStart;
+        private string dateEnd;
+
+        private DateTime lastDayOfMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddMonths(1).AddDays(-1);
+
+
         /// <summary>
         /// Wyświetla wszystkie rezerwacje
         /// </summary>
         public ShowReservations()
         {
             InitializeComponent();
+            datePicker1.Loaded += DatePicker1_Loaded;
+            datePicker2.Loaded += DatePicker2_Loaded;
+            dateStart = DateTime.Today.ToString("yyyy.MM.dd");
+            dateEnd = lastDayOfMonth.ToString("yyyy.MM.dd");
+            //datePicker2.Loaded += DatePicker_Loaded;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
@@ -151,11 +162,16 @@ namespace WpfApp_Hotel
                     textBox.Text = "Search for guest name...";
                     //Przywroć pierwotny wygląd tabeli
                     dataGrid.ItemsSource = dataTableDeafault.DefaultView;
-                } 
+                }
             }
-                
+
         }
 
+        /// <summary>
+        /// Reaguje na kliknięcie przycisku lupy (wyszukiwania)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Search_Click(object sender, RoutedEventArgs e)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -178,7 +194,7 @@ namespace WpfApp_Hotel
                         dataGrid.ItemsSource = dataTableDeafault.DefaultView;
                         textBoxForSearch.Text = "Search for guest name...";
                     }
-                        
+
 
                     reader.Close();
                 }
@@ -187,8 +203,133 @@ namespace WpfApp_Hotel
                     MessageBox.Show("Wystąpił błąd podczas pobierania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
 
+        /// <summary>
+        /// Domyślnie ustawia datę na bieżącą dla pierwszego datePickera
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DatePicker1_Loaded(object sender, RoutedEventArgs e)
+        {
+            DatePicker datePicker = (DatePicker)sender;
+            datePicker.SelectedDate = DateTime.Today;
+        }
+
+        /// <summary>
+        /// Domyślnie ustawia datę na ostatni dzień bieżącego miesiąca dla drugiego datePickera
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DatePicker2_Loaded(object sender, RoutedEventArgs e)
+        {
+            DatePicker datePicker = (DatePicker)sender;
+            datePicker.SelectedDate = lastDayOfMonth;
+        }
+
+        /// <summary>
+        /// Reaguje na wybranie daty początkowej
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DatePicker_StartDate_SelectedDateChanged(object sender, RoutedEventArgs e)
+        {
+            DatePicker datePicker = (DatePicker)sender;
+            if(datePicker != null)
+            {
+                DateTime selectedDate = datePicker.SelectedDate.Value;
+                if (selectedDate != DateTime.Today)
+                {
+                    dateStart = selectedDate.ToString("yyyy.MM.dd");
+
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        try
+                        {
+                            connection.Open();
+                            // Zapytanie SQL do pobrania najważniejszych informacji o rezerwacji
+                            string query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE r.CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}' OR r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}'";
+                            SqlCommand command = new SqlCommand(query, connection);
+                            SqlDataReader reader = command.ExecuteReader();
+
+                            DataTable dataTable = new DataTable();
+                            dataTable.Load(reader);
+                            dataGrid.ItemsSource = dataTable.DefaultView;
+                            reader.Close();
+
+                            if (dataGrid.Items.Count < 1)
+                            {
+                                MessageBox.Show("no matching results found data start");
+                                datePicker1.SelectedDate = DateTime.Today;
+                                datePicker2.SelectedDate = lastDayOfMonth;
+
+                                dataGrid.ItemsSource = dataTableDeafault.DefaultView;
+                            }
+                        }
+                        catch (SqlException ex)
+                        {
+                            MessageBox.Show("Wystąpił błąd podczas pobierania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                }
+                    
+            }
+        }
+
+        /// <summary>
+        /// Reaguje na wybranie daty końcowej
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DatePicker_EndDate_SelectedDateChanged(object sender, RoutedEventArgs e)
+        {
             
+            DatePicker datePicker = (DatePicker)sender;
+            if (datePicker != null)
+            {
+                DateTime selectedDate = datePicker.SelectedDate.Value;
+                if (selectedDate < datePicker1.SelectedDate.Value)
+                {
+                    lastDayOfMonth.ToString("yyyy.MM.dd");
+                    datePicker2.SelectedDate = lastDayOfMonth;
+                }
+
+                if (selectedDate != lastDayOfMonth)
+                {
+                    dateEnd = selectedDate.ToString("yyyy.MM.dd");
+
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        try
+                        {
+                            connection.Open();
+                            // Zapytanie SQL do pobrania najważniejszych informacji o rezerwacji
+                            string query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE r.CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}' OR r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}'";
+                            SqlCommand command = new SqlCommand(query, connection);
+                            SqlDataReader reader = command.ExecuteReader();
+
+                            DataTable dataTable = new DataTable();
+                            dataTable.Load(reader);
+                            dataGrid.ItemsSource = dataTable.DefaultView;
+                            reader.Close();
+
+                            if (dataGrid.Items.Count < 1)
+                            {
+                                MessageBox.Show("no matching results found data koniec");
+                                datePicker1.SelectedDate = DateTime.Today;
+                                datePicker2.SelectedDate = lastDayOfMonth;
+
+                                dataGrid.ItemsSource = dataTableDeafault.DefaultView;
+                            }
+                        }
+                        catch (SqlException ex)
+                        {
+                            MessageBox.Show("Wystąpił błąd podczas pobierania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                }
+
+            }
         }
     }
 }

@@ -15,20 +15,32 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition />
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
         <TextBox Style="{StaticResource textBoxQuery}"  x:Name="textBoxForSearch"
                  Text="Search for guest name..."
          GotFocus="TextBox_GotFocus" 
-         LostFocus="TextBox_LostFocus">
-        </TextBox>
+         LostFocus="TextBox_LostFocus"/>
+
 
         <Button Grid.Column="1" Click="Search_Click" Style="{StaticResource searchStyle}">
             <Image Source="/searchIcon.png"/>
         </Button>
+
+        <Label Grid.Column="2" Style="{StaticResource dateLabel}" Content="Search from: "/>
+        <DatePicker Grid.Column="3" x:Name="datePicker1"
+                    Loaded="DatePicker1_Loaded"  SelectedDateChanged="DatePicker_StartDate_SelectedDateChanged" />
         
-        <DataGrid Grid.Row="1" Grid.ColumnSpan="2" x:Name="dataGrid" AutoGenerateColumns="False" IsReadOnly="True" MouseDoubleClick="reservationsListBox_Click"  >
+        <Label Grid.Column="4" Style="{StaticResource dateLabel}" Content="to: "/>
+        <DatePicker Grid.Column="5" x:Name="datePicker2" 
+                    Loaded="DatePicker2_Loaded" SelectedDateChanged="DatePicker_EndDate_SelectedDateChanged" />
+
+        <DataGrid Grid.Row="1" Grid.ColumnSpan="6" x:Name="dataGrid" AutoGenerateColumns="False" IsReadOnly="True" MouseDoubleClick="reservationsListBox_Click"  >
             <DataGrid.Columns>
                 <DataGridTextColumn Width ="20*" Header="Last Name" Binding="{Binding LastName}"/>
                 <DataGridTextColumn Width ="20*" Header="First Name" Binding="{Binding FirstName}"/>
@@ -37,6 +49,7 @@
                 <DataGridTextColumn Width ="20*" Header="Reservation Number" Binding="{Binding ReservationID}" />
             </DataGrid.Columns>
         </DataGrid>
+        <DatePicker Grid.Column="2" HorizontalAlignment="Left" Margin="798,-58,0,0" VerticalAlignment="Top"/>
 
 
     </Grid>
