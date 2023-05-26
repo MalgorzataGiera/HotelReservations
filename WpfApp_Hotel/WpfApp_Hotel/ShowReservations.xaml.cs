@@ -51,7 +51,7 @@ namespace WpfApp_Hotel
                 {
                     connection.Open();
                     // Zapytanie SQL do pobrania najważniejszych informacji o rezerwacji
-                    string query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID";
+                    string query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE r.CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}' OR r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}'";
                     SqlCommand command = new SqlCommand(query, connection);
                     SqlDataReader reader = command.ExecuteReader();
 
@@ -139,7 +139,7 @@ namespace WpfApp_Hotel
             if (textBox.Text == "Search for guest name...")
             {
                 textBox.Text = string.Empty;
-                dataGrid.ItemsSource = dataTableDeafault.DefaultView;
+                //dataGrid.ItemsSource = dataTableDeafault.DefaultView;
             }
                 
         }
@@ -160,7 +160,7 @@ namespace WpfApp_Hotel
 
                 userQuery = null;
                 textBox.Text = "Search for guest name...";
-                dataGrid.ItemsSource = dataTableDeafault.DefaultView;
+                //dataGrid.ItemsSource = dataTableDeafault.DefaultView;
             }
                 
             else
@@ -171,7 +171,7 @@ namespace WpfApp_Hotel
                     MessageBox.Show("no matching results found");
                     textBox.Text = "Search for guest name...";
                     //Przywroć pierwotny wygląd tabeli
-                    dataGrid.ItemsSource = dataTableDeafault.DefaultView;
+                    //dataGrid.ItemsSource = dataTableDeafault.DefaultView;
                 }
             }
 
@@ -190,13 +190,16 @@ namespace WpfApp_Hotel
                 {
                     string query;
                     connection.Open();
+
+                    dateStart = datePicker1.SelectedDate.Value.ToString("yyyy.MM.dd");
+                    dateEnd = datePicker2.SelectedDate.Value.ToString("yyyy.MM.dd");
                     // Zapytanie SQL do pobrania najważniejszych informacji o rezerwacji
                     if (userQuery == null || userQuery.Length == 0)
-                         query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID";
+                         query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE r.CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}' OR r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}'";
                     
                     else
                     {
-                        query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE g.LastName LIKE '{userQuery[0]}%' OR g.FirstName LIKE '{userQuery[0]}%'";
+                        query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE (g.LastName LIKE '{userQuery[0]}%' OR g.FirstName LIKE '{userQuery[0]}%') AND (r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}' OR CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}')";
                     }
                     
                     SqlCommand command = new SqlCommand(query, connection);
@@ -209,7 +212,7 @@ namespace WpfApp_Hotel
                     if (dataGrid.Items.Count < 1)
                     {
                         MessageBox.Show("no matching results found");
-                        dataGrid.ItemsSource = dataTableDeafault.DefaultView;
+                        //dataGrid.ItemsSource = dataTableDeafault.DefaultView;
                         textBoxForSearch.Text = "Search for guest name...";
                     }
 
@@ -265,8 +268,16 @@ namespace WpfApp_Hotel
                         try
                         {
                             connection.Open();
-                            // Zapytanie SQL do pobrania najważniejszych informacji o rezerwacji
-                            string query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE r.CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}' OR r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}'";
+                            string query;
+                            if (userQuery == null || userQuery.Length == 0)
+                            {
+                                query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE r.CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}' OR r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}'";
+                            }
+                            else
+                            {
+                                query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE (g.LastName LIKE '{userQuery[0]}%' OR g.FirstName LIKE '{userQuery[0]}%') AND (r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}' OR CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}')";
+                            }
+                                
                             SqlCommand command = new SqlCommand(query, connection);
                             SqlDataReader reader = command.ExecuteReader();
 
@@ -278,10 +289,11 @@ namespace WpfApp_Hotel
                             if (dataGrid.Items.Count < 1)
                             {
                                 MessageBox.Show("no matching results found data start");
-                                datePicker1.SelectedDate = DateTime.Today;
-                                datePicker2.SelectedDate = lastDayOfMonth;
+                                //datePicker1.SelectedDate = DateTime.Today;
+                                //datePicker2.SelectedDate = lastDayOfMonth;
 
-                                dataGrid.ItemsSource = dataTableDeafault.DefaultView;
+                                //dataGrid.ItemsSource = dataTableDeafault.DefaultView;
+                                
                             }
                         }
                         catch (SqlException ex)
@@ -321,8 +333,16 @@ namespace WpfApp_Hotel
                         try
                         {
                             connection.Open();
-                            // Zapytanie SQL do pobrania najważniejszych informacji o rezerwacji
-                            string query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE r.CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}' OR r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}'";
+                            string query;
+                            if (userQuery == null || userQuery.Length == 0)
+                            {
+                                query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE r.CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}' OR r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}'";
+                            }
+                            else
+                            {
+                                query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE (g.LastName LIKE '{userQuery[0]}%' OR g.FirstName LIKE '{userQuery[0]}%') AND (r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}' OR CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}')";
+                            }
+
                             SqlCommand command = new SqlCommand(query, connection);
                             SqlDataReader reader = command.ExecuteReader();
 
@@ -334,10 +354,10 @@ namespace WpfApp_Hotel
                             if (dataGrid.Items.Count < 1)
                             {
                                 MessageBox.Show("no matching results found data koniec");
-                                datePicker1.SelectedDate = DateTime.Today;
-                                datePicker2.SelectedDate = lastDayOfMonth;
+                                //datePicker1.SelectedDate = DateTime.Today;
+                                //datePicker2.SelectedDate = lastDayOfMonth;
 
-                                dataGrid.ItemsSource = dataTableDeafault.DefaultView;
+                                //dataGrid.ItemsSource = dataTableDeafault.DefaultView;
                             }
                         }
                         catch (SqlException ex)
