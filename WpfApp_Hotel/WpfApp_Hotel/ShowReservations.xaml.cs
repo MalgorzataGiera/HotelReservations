@@ -59,7 +59,6 @@ namespace WpfApp_Hotel
                     dataTableDeafault.Load(reader);
                     dataGrid.ItemsSource = dataTableDeafault.DefaultView;
 
-
                     reader.Close();
                 }
                 catch (SqlException ex)
@@ -161,7 +160,6 @@ namespace WpfApp_Hotel
 
                 userQuery = null;
                 textBox.Text = "Search for guest name...";
-                //dataGrid.ItemsSource = dataTableDeafault.DefaultView;
             }
                 
             else
@@ -171,8 +169,6 @@ namespace WpfApp_Hotel
                 {
                     MessageBox.Show("no matching results found");
                     textBox.Text = "Search for guest name...";
-                    //Przywroć pierwotny wygląd tabeli
-                    //dataGrid.ItemsSource = dataTableDeafault.DefaultView;
                 }
             }
 
@@ -213,10 +209,8 @@ namespace WpfApp_Hotel
                     if (dataGrid.Items.Count < 1)
                     {
                         MessageBox.Show("no matching results found");
-                        //dataGrid.ItemsSource = dataTableDeafault.DefaultView;
-                        textBoxForSearch.Text = "Search for guest name...";
+                        //textBoxForSearch.Text = "Search for guest name...";
                     }
-
 
                     reader.Close();
                 }
