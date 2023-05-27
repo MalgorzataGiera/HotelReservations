@@ -23,6 +23,10 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
+        <!--<TextBlock Style="{StaticResource textBlock_AddReservation_Style}">
+            Guest: 
+        </TextBlock>-->
+        
         <TextBlock Style="{StaticResource textBlock_AddReservation_Style}">
             First name:
         </TextBlock>
@@ -50,8 +54,9 @@
         </TextBlock>
 
         <!-- wprowadzanie danych -->
-        <TextBox Grid.Column="1" x:Name="_name" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_name_LostFocus" GotFocus="_name_GotFocus"/>
+        
 
+        <TextBox Grid.Column="1" x:Name="_name" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_name_LostFocus" GotFocus="_name_GotFocus"/>
 
         <TextBox Grid.Row="1" Grid.Column="1" x:Name="_lastName" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_lastName_LostFocus" GotFocus="_lastName_GotFocus"/>
 

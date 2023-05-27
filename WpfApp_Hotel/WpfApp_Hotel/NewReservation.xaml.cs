@@ -64,7 +64,12 @@ namespace WpfApp_Hotel
 
             bool canAdd = true;
 
-            SqlCommand command;
+            SqlCommand commandGuestID;
+            SqlCommand commandEmployeeID;
+            SqlCommand commandInsert;
+
+            
+                
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -75,8 +80,8 @@ namespace WpfApp_Hotel
                     if (!String.IsNullOrWhiteSpace(name) && !String.IsNullOrWhiteSpace(lastName))
                     {
                         string queryGuestID = $"SELECT GuestID FROM Guests WHERE FirstName = '{name}' AND LastName = '{lastName}'";
-                        command = new SqlCommand(queryGuestID, connection);
-                        SqlDataReader reader = command.ExecuteReader();
+                        commandGuestID = new SqlCommand(queryGuestID, connection);
+                        SqlDataReader reader = commandGuestID.ExecuteReader();
 
                         while (reader.Read())
                         {
@@ -85,14 +90,15 @@ namespace WpfApp_Hotel
                         reader.Close();
                     }
                     else
-                        canAdd = false;
+                        canAdd= false;
+                        
 
                     if (!String.IsNullOrWhiteSpace(employeeName) && !String.IsNullOrWhiteSpace(employeeLastName))
                     {
                         // Zapytanie SQL do pobrania id pracownika
                         string queryEmployeeID = $"SELECT EmployeeID FROM Employees WHERE FirstName = '{employeeName}' AND LastName = '{employeeLastName}'";
-                        command = new SqlCommand(queryEmployeeID, connection);
-                        SqlDataReader reader = command.ExecuteReader();
+                        commandEmployeeID = new SqlCommand(queryEmployeeID, connection);
+                        SqlDataReader reader = commandEmployeeID.ExecuteReader();
 
                         while (reader.Read())
                         {
@@ -103,14 +109,17 @@ namespace WpfApp_Hotel
                     else
                         canAdd = false;
 
-                    if (!String.IsNullOrWhiteSpace(phone) && canAdd == true)
+                    if (!String.IsNullOrWhiteSpace(phone) && canAdd == true && room != 0)
                     {
+                       
                         // Zapytanie SQL do dodania rezerwacji
                         string queryAddReservation = $"INSERT INTO Reservations (RoomNumber, GuestID, CheckInDate, CheckOutDate, EmployeeID) VALUES ({room}, {guestID}, '{checkIn}', '{checkOut}', {employeeID})";
-                        command = new SqlCommand(queryAddReservation, connection);
+                        
+                        
+                        commandInsert = new SqlCommand(queryAddReservation, connection);
 
-                        command.ExecuteNonQuery();
-                        int rowsAffected = command.ExecuteNonQuery();
+                        //command.ExecuteNonQuery();
+                        int rowsAffected = commandInsert.ExecuteNonQuery();
 
                         if (rowsAffected > 0)
                         {
@@ -125,16 +134,29 @@ namespace WpfApp_Hotel
                 {
                     MessageBox.Show("Wystąpił błąd podczas dodawania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+                _name.Text = string.Empty;
+                _lastName.Text = string.Empty;
+                _room.Text = string.Empty;
+                _phone.Text = string.Empty;
+                _mail.Text = string.Empty;
+                _employee.Text = string.Empty;
+                _checkIn.SelectedDate = DateTime.Today.AddDays(1);
+                _checkOut.SelectedDate = DateTime.Today.AddDays(2);
             }
         }
 
         private void _name_LostFocus(object sender, RoutedEventArgs e)
         {
             _name.Foreground = Brushes.Red;
-            if (_name.Text == "")
+            if (String.IsNullOrWhiteSpace(_name.Text))
+            {
                 _name.Text = "mandatory field";
+                _name.Text = string.Empty;
+                name = string.Empty;
+            }
+                
             else
-                name= _name.Text;
+                name = _name.Text;
             
         }
 
@@ -143,6 +165,7 @@ namespace WpfApp_Hotel
             _name.Foreground = Brushes.Red;
             if (_name.Text == "mandatory field")
                 _name.Text = string.Empty;
+            name= string.Empty;
             
         }
 
@@ -150,7 +173,12 @@ namespace WpfApp_Hotel
         {
             _lastName.Foreground = Brushes.Red;
             if (_lastName.Text == "")
+            {
+                _lastName.Text = string.Empty;
                 _lastName.Text = "mandatory field";
+                lastName = string.Empty;
+            }
+                
             else
                 lastName = _lastName.Text;
             
@@ -167,7 +195,12 @@ namespace WpfApp_Hotel
         {
             _room.Foreground = Brushes.Red;
             if (_room.Text == "")
+            {
+                _room.Text = string.Empty;
                 _room.Text = "mandatory field";
+                room = 0;
+            }
+                
             else
                 room = int.Parse(_room.Text);
             
@@ -185,7 +218,12 @@ namespace WpfApp_Hotel
         {
             _phone.Foreground = Brushes.Red;
             if (_phone.Text == "")
+            {
+                _phone.Text = string.Empty;
                 _phone.Text = "mandatory field";
+                phone = string.Empty;
+            }
+                
             else
                 phone = _phone.Text;
             
@@ -204,6 +242,7 @@ namespace WpfApp_Hotel
             _mail.Foreground = Brushes.Red;
             if (_mail.Text != "")
                 mail = _employee.Text;
+            else mail= string.Empty;
             
         }
 
@@ -219,7 +258,12 @@ namespace WpfApp_Hotel
         {
             _employee.Foreground = Brushes.Red;
             if (_employee.Text == "")
+            {
+                _employee.Text = string.Empty;
                 _employee.Text = "mandatory field";
+                employee = string.Empty;
+            }
+                
             else
             {
                 employee = _employee.Text;
