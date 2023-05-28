@@ -1,0 +1,46 @@
+﻿<Window x:Class="WpfApp_Hotel.GuestsBrowse"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp_Hotel"
+        mc:Ignorable="d"
+        Title="GuestsBrowse" Height="450" Width="800">
+    <Grid Background="#FF002AAD">
+        <Grid.RowDefinitions >
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition />
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        
+        <TextBox Style="{StaticResource textBoxQuery}"  x:Name="textBoxForSearch"
+                 Text="Search..."
+         GotFocus="TextBox_GotFocus" 
+         LostFocus="TextBox_LostFocus"/>
+
+
+        <Button Grid.Column="1" Click="Search_Click" Style="{StaticResource searchStyle}">
+            <Image Source="/searchIcon.png"/>
+        </Button>
+
+        <DataGrid Grid.Row="1" Grid.ColumnSpan="6" x:Name="dataGrid" AutoGenerateColumns="False" IsReadOnly="True" MouseDoubleClick="GuestChosen_MouseDoubleClick">
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="12,5*" Header="Last Name" Binding="{Binding LastName}"/>
+                <DataGridTextColumn Width="12,5*" Header="First Name" Binding="{Binding FirstName}"/>
+                <DataGridTextColumn Width="12,5*" Header="PESEL" Binding="{Binding PESEL}" />
+                <DataGridTextColumn Width="12,5*" Header="Document" Binding="{Binding DocumentType}" />
+                <DataGridTextColumn Width="12,5*" Header="Document Nr" Binding="{Binding DocumentNumber}" />
+                <DataGridTextColumn Width="12,5*" Header="City" Binding="{Binding City}" />
+                <DataGridTextColumn Width="12,5*" Header="Phone" Binding="{Binding PhoneNumber}" />
+
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

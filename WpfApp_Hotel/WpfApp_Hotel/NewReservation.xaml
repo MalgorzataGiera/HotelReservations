@@ -5,60 +5,54 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp_Hotel"
         mc:Ignorable="d"
-        Title="NewReservation" Height="450" Width="350">
+        Title="NewReservation" Height="450" Width="380">
     <Grid Margin="10,20,10,20">
         <Grid.RowDefinitions>
-            <RowDefinition/> <!-- imie -->
-            <RowDefinition/>            <!-- nazwisko -->
-            <RowDefinition/>            <!-- data od -->
-            <RowDefinition/>            <!-- do -->
-            <RowDefinition/> <!-- pokoj -->
-            <RowDefinition/> <!-- tel -->
-            <RowDefinition/> <!-- mail -->
-            <RowDefinition/> <!-- pracownik -->
-            <RowDefinition/> <!-- pracownik -->
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="70"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <!--<TextBlock Style="{StaticResource textBlock_AddReservation_Style}">
-            Guest: 
-        </TextBlock>-->
-        
         <TextBlock Style="{StaticResource textBlock_AddReservation_Style}">
-            First name:
+            Guest: 
         </TextBlock>
+        
         <TextBlock Grid.Row="1" Style="{StaticResource textBlock_AddReservation_Style}">
-            Last name:
-        </TextBlock>
-        <TextBlock Grid.Row="2" Style="{StaticResource textBlock_AddReservation_Style}">
             From:
         </TextBlock>
-        <TextBlock Grid.Row="3" Style="{StaticResource textBlock_AddReservation_Style}">
+        <TextBlock Grid.Row="2" Style="{StaticResource textBlock_AddReservation_Style}">
             To:
         </TextBlock>
 
-        <TextBlock Grid.Row="4" Style="{StaticResource textBlock_AddReservation_Style}">
+        <TextBlock Grid.Row="3" Style="{StaticResource textBlock_AddReservation_Style}">
             Room: 
         </TextBlock>
-        <TextBlock Grid.Row="5" Style="{StaticResource textBlock_AddReservation_Style}">
+        <TextBlock Grid.Row="4" Style="{StaticResource textBlock_AddReservation_Style}">
             Phone nr: 
         </TextBlock>
-        <TextBlock Grid.Row="6" Style="{StaticResource textBlock_AddReservation_Style}">
+        <TextBlock Grid.Row="5" Style="{StaticResource textBlock_AddReservation_Style}">
             E-mail: 
         </TextBlock>
-        <TextBlock Grid.Row="7" Style="{StaticResource textBlock_AddReservation_Style}">
+        <TextBlock Grid.Row="6" Style="{StaticResource textBlock_AddReservation_Style}">
             Taken by:
         </TextBlock>
 
         <!-- wprowadzanie danych -->
         
 
-        <TextBox Grid.Column="1" x:Name="_name" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_name_LostFocus" GotFocus="_name_GotFocus"/>
+        <TextBox Grid.Column="1" x:Name="_guest" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_guest_LostFocus" GotFocus="_guest_GotFocus"/>
 
-        <TextBox Grid.Row="1" Grid.Column="1" x:Name="_lastName" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_lastName_LostFocus" GotFocus="_lastName_GotFocus"/>
+        <Button Grid.Column="2" Content="..." Style="{StaticResource submitButtonStyle}" Click="BrowseGuests"/>
 
         <DatePicker Grid.Row="2"  Grid.Column="1" Width="200" x:Name="_checkIn" 
                     Loaded="DatePicker1_Loaded">
@@ -88,7 +82,7 @@
 
         <TextBox Grid.Row="7" Grid.Column="1" x:Name="_employee" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_employee_LostFocus" GotFocus="_employee_GotFocus"/>
 
-        <Button Grid.Row="8" Grid.Column="1" Content="Add" Style="{StaticResource submitButtonStyle}" Click="AddReservation"/>
+        <Button Grid.Row="7" Grid.Column="1" Content="Add" Style="{StaticResource submitButtonStyle}" Click="AddReservation"/>
 
     </Grid>
 </Window>

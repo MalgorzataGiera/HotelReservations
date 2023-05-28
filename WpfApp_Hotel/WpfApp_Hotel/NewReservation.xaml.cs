@@ -29,8 +29,10 @@ namespace WpfApp_Hotel
         private int guestID;
         private string checkIn = "";
         private string checkOut = "";
-        private string name;
-        private string lastName;
+
+        private string guest;
+        public string guestName;
+        public string guestLastName;
 
         private int room;
         private string phone;
@@ -68,18 +70,15 @@ namespace WpfApp_Hotel
             SqlCommand commandEmployeeID;
             SqlCommand commandInsert;
 
-            
-                
-
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
                 {
                     connection.Open();
                     // Zapytanie SQL do pobrania id gościa
-                    if (!String.IsNullOrWhiteSpace(name) && !String.IsNullOrWhiteSpace(lastName))
+                    if (!String.IsNullOrWhiteSpace(guestName) && !String.IsNullOrWhiteSpace(guestLastName))
                     {
-                        string queryGuestID = $"SELECT GuestID FROM Guests WHERE FirstName = '{name}' AND LastName = '{lastName}'";
+                        string queryGuestID = $"SELECT GuestID FROM Guests WHERE FirstName = '{guestName}' AND LastName = '{guestLastName}'";
                         commandGuestID = new SqlCommand(queryGuestID, connection);
                         SqlDataReader reader = commandGuestID.ExecuteReader();
 
@@ -90,8 +89,8 @@ namespace WpfApp_Hotel
                         reader.Close();
                     }
                     else
-                        canAdd= false;
-                        
+                        canAdd = false;
+
 
                     if (!String.IsNullOrWhiteSpace(employeeName) && !String.IsNullOrWhiteSpace(employeeLastName))
                     {
@@ -134,8 +133,9 @@ namespace WpfApp_Hotel
                 {
                     MessageBox.Show("Wystąpił błąd podczas dodawania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                _name.Text = string.Empty;
-                _lastName.Text = string.Empty;
+                //_name.Text = string.Empty;
+                //_lastName.Text = string.Empty;
+                _guest.Text = string.Empty;
                 _room.Text = string.Empty;
                 _phone.Text = string.Empty;
                 _mail.Text = string.Empty;
@@ -145,50 +145,34 @@ namespace WpfApp_Hotel
             }
         }
 
-        private void _name_LostFocus(object sender, RoutedEventArgs e)
+        private void _guest_LostFocus(object sender, RoutedEventArgs e)
         {
-            _name.Foreground = Brushes.Red;
-            if (String.IsNullOrWhiteSpace(_name.Text))
+            _guest.Foreground = Brushes.Red;
+            if (String.IsNullOrWhiteSpace(_guest.Text))
             {
-                _name.Text = "mandatory field";
-                _name.Text = string.Empty;
-                name = string.Empty;
+                _guest.Text = "mandatory field";
+                _guest.Text = string.Empty;
+                guest = string.Empty;
             }
-                
+
             else
-                name = _name.Text;
-            
-        }
-
-        private void _name_GotFocus(object sender, RoutedEventArgs e)
-        {
-            _name.Foreground = Brushes.Red;
-            if (_name.Text == "mandatory field")
-                _name.Text = string.Empty;
-            name= string.Empty;
-            
-        }
-
-        private void _lastName_LostFocus(object sender, RoutedEventArgs e)
-        {
-            _lastName.Foreground = Brushes.Red;
-            if (_lastName.Text == "")
             {
-                _lastName.Text = string.Empty;
-                _lastName.Text = "mandatory field";
-                lastName = string.Empty;
+                guest = _guest.Text;
+                var temp = guest.Split(' ');
+                if(temp.Length == 2)
+                {
+                    guestName = temp[0];
+                    guestLastName = temp[1];
+                }
             }
-                
-            else
-                lastName = _lastName.Text;
-            
         }
 
-        private void _lastName_GotFocus(object sender, RoutedEventArgs e)
+        private void _guest_GotFocus(object sender, RoutedEventArgs e)
         {
-            _lastName.Foreground = Brushes.Red;
-            if (_lastName.Text == "mandatory field")
-                _lastName.Text = string.Empty;
+            _guest.Foreground = Brushes.Red;
+            if (_guest.Text == "mandatory field")
+                _guest.Text = string.Empty;
+
         }
 
         private void _room_LostFocus(object sender, RoutedEventArgs e)
@@ -283,6 +267,17 @@ namespace WpfApp_Hotel
             if (_employee.Text == "mandatory field")
                 _employee.Text = string.Empty;
             
+        }
+
+        private void BrowseGuests(object sender, RoutedEventArgs e)
+        {
+            GuestsBrowse guestsBrowse = new GuestsBrowse();
+            guestsBrowse.Show();
+        }
+
+        public void SetGuestData(string firstName, string lastName)
+        {
+            _guest.Text = $"{firstName} {lastName}";
         }
     }
 }
