@@ -26,6 +26,10 @@ namespace WpfApp_Hotel
         private DataTable dataTableDeafault;
         private string firstName;
         private string lastName;
+
+        /// <summary>
+        /// Tworzy nowe okno pozwalające przeglądać istniejących gości
+        /// </summary>
         public GuestsBrowse()
         {
             InitializeComponent();
@@ -102,6 +106,12 @@ namespace WpfApp_Hotel
             }
 
         }
+
+        /// <summary>
+        /// Obsługuje kliknięcie przycisku lupy (wyszukiwania)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Search_Click(object sender, RoutedEventArgs e)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -141,7 +151,11 @@ namespace WpfApp_Hotel
             }
         }
         
-
+        /// <summary>
+        /// Obsługuje zdarzenie podwójnego kliknięcia myszą na gościa. Przekazuje imię i nazwisko do okna dodawania rezerwacji
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void GuestChosen_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -157,7 +171,7 @@ namespace WpfApp_Hotel
                         documentNr = rowView[columnName].ToString();
 
                         // Zapytanie SQL do pobrania id goscia
-                        string query = $"SELECT GuestID, FirstName, LastName FROM Guests WHERE DocumentNumber = '{documentNr}'";
+                        string query = $"SELECT FirstName, LastName FROM Guests WHERE DocumentNumber = '{documentNr}'";
 
                         SqlCommand command = new SqlCommand(query, connection);
                         command.Parameters.AddWithValue("@SortOption", documentNr);
@@ -177,8 +191,6 @@ namespace WpfApp_Hotel
                         NewReservation newReservation = new NewReservation();
                         newReservation.SetGuestData(firstName, lastName);
                         newReservation.Show();
-
-                        
 
                         newReservation.guestName = firstName;
                         newReservation.guestLastName = lastName;

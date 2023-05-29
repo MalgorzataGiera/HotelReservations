@@ -41,6 +41,10 @@ namespace WpfApp_Hotel
         private string employee;
         private string employeeName = "";
         private string employeeLastName = "";
+
+        /// <summary>
+        /// Tworzy okno umożliwiające dodawanie nowych rezerwacji
+        /// </summary>
         public NewReservation()
         {
             InitializeComponent();
@@ -48,16 +52,33 @@ namespace WpfApp_Hotel
             _checkOut.Loaded += DatePicker2_Loaded;
         }
 
+        /// <summary>
+        /// Domyślnie ustawia datę rozpoczęcia rezerwacji
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DatePicker1_Loaded(object sender, RoutedEventArgs e)
         {
             DatePicker datePicker = (DatePicker)sender;
             datePicker.SelectedDate = DateTime.Today.AddDays(1);
         }
+
+        /// <summary>
+        /// Domyślnie ustawia datę zakończenia rezerwacji
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DatePicker2_Loaded(object sender, RoutedEventArgs e)
         {
             DatePicker datePicker = (DatePicker)sender;
             datePicker.SelectedDate = DateTime.Today.AddDays(2);
         }
+
+        /// <summary>
+        /// Obsługuje kliknięcie przycisku "Add". Dodaje nową rezerwację
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AddReservation(object sender, RoutedEventArgs e)
         {
             checkIn = _checkIn.SelectedDate.Value.ToString("yyyy.MM.dd");
@@ -75,6 +96,7 @@ namespace WpfApp_Hotel
                 try
                 {
                     connection.Open();
+
                     // Zapytanie SQL do pobrania id gościa
                     if (!String.IsNullOrWhiteSpace(guestName) && !String.IsNullOrWhiteSpace(guestLastName))
                     {
@@ -133,8 +155,7 @@ namespace WpfApp_Hotel
                 {
                     MessageBox.Show("Wystąpił błąd podczas dodawania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                //_name.Text = string.Empty;
-                //_lastName.Text = string.Empty;
+
                 _guest.Text = string.Empty;
                 _room.Text = string.Empty;
                 _phone.Text = string.Empty;
@@ -145,6 +166,11 @@ namespace WpfApp_Hotel
             }
         }
 
+        /// <summary>
+        /// Reaguje na opuszczenie text boxa _guest
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _guest_LostFocus(object sender, RoutedEventArgs e)
         {
             _guest.Foreground = Brushes.Red;
@@ -167,6 +193,11 @@ namespace WpfApp_Hotel
             }
         }
 
+        /// <summary>
+        /// Reaguje na kliknięcie text boxa _guest
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _guest_GotFocus(object sender, RoutedEventArgs e)
         {
             _guest.Foreground = Brushes.Red;
@@ -175,6 +206,11 @@ namespace WpfApp_Hotel
 
         }
 
+        /// <summary>
+        /// Reaguje na opuszczenie text boxa _room
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _room_LostFocus(object sender, RoutedEventArgs e)
         {
             _room.Foreground = Brushes.Red;
@@ -190,6 +226,11 @@ namespace WpfApp_Hotel
             
         }
 
+        /// <summary>
+        /// Reaguje na kliknięcie text boxa _room
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _room_GotFocus(object sender, RoutedEventArgs e)
         {
             _room.Foreground = Brushes.Red;
@@ -198,6 +239,11 @@ namespace WpfApp_Hotel
             
         }
 
+        /// <summary>
+        /// Reaguje na opuszczenie text boxa _phone
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _phone_LostFocus(object sender, RoutedEventArgs e)
         {
             _phone.Foreground = Brushes.Red;
@@ -213,6 +259,11 @@ namespace WpfApp_Hotel
             
         }
 
+        /// <summary>
+        /// Reaguje na kliknięcie text boxa _phone
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _phone_GotFocus(object sender, RoutedEventArgs e)
         {
             _phone.Foreground = Brushes.Red;
@@ -221,6 +272,11 @@ namespace WpfApp_Hotel
             
         }
 
+        /// <summary>
+        /// Reaguje na opuszczenie text boxa _mail
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _mail_LostFocus(object sender, RoutedEventArgs e)
         {
             _mail.Foreground = Brushes.Red;
@@ -230,6 +286,11 @@ namespace WpfApp_Hotel
             
         }
 
+        /// <summary>
+        /// Reaguje na kliknięcie text boxa _mail
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _mail_GotFocus(object sender, RoutedEventArgs e)
         {
             _mail.Foreground = Brushes.Red;
@@ -238,6 +299,11 @@ namespace WpfApp_Hotel
             
         }
 
+        /// <summary>
+        /// Reaguje na opuszczenie text boxa _employee
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _employee_LostFocus(object sender, RoutedEventArgs e)
         {
             _employee.Foreground = Brushes.Red;
@@ -261,6 +327,11 @@ namespace WpfApp_Hotel
             
         }
 
+        /// <summary>
+        /// Reaguje na kliknięcie text boxa _eployee
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void _employee_GotFocus(object sender, RoutedEventArgs e)
         {
             _employee.Foreground = Brushes.Red;
@@ -269,12 +340,22 @@ namespace WpfApp_Hotel
             
         }
 
+        /// <summary>
+        /// Obsługuje kliknięcie przycisku "..."
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void BrowseGuests(object sender, RoutedEventArgs e)
         {
             GuestsBrowse guestsBrowse = new GuestsBrowse();
             guestsBrowse.Show();
         }
 
+        /// <summary>
+        /// Wstawia do text boxa _guest imie i nazwisko wybranego gościa z okna GuestBrowse
+        /// </summary>
+        /// <param name="firstName"></param>
+        /// <param name="lastName"></param>
         public void SetGuestData(string firstName, string lastName)
         {
             _guest.Text = $"{firstName} {lastName}";
