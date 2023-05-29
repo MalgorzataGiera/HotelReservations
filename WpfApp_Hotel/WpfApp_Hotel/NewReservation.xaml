@@ -76,7 +76,9 @@
 
         <TextBox Grid.Row="3" Grid.Column="1" x:Name="_room" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_room_LostFocus" GotFocus="_room_GotFocus"/>
 
-        <TextBox Grid.Row="4" Grid.Column="1" x:Name="_phone" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_phone_LostFocus" GotFocus="_phone_GotFocus"/>
+        <Button Grid.Column="2" Grid.Row="3" Content="..." Style="{StaticResource submitButtonStyle}" Click="BrowseRooms"/>
+
+            <TextBox Grid.Row="4" Grid.Column="1" x:Name="_phone" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_phone_LostFocus" GotFocus="_phone_GotFocus"/>
 
         <TextBox Grid.Row="5" Grid.Column="1" x:Name="_mail" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_mail_LostFocus" GotFocus="_mail_GotFocus"/>
 

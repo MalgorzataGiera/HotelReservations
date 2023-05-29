@@ -34,7 +34,7 @@ namespace WpfApp_Hotel
         public string guestName;
         public string guestLastName;
 
-        private int room;
+        public int room;
         private string phone;
 
         private string mail;
@@ -341,7 +341,7 @@ namespace WpfApp_Hotel
         }
 
         /// <summary>
-        /// Obsługuje kliknięcie przycisku "..."
+        /// Obsługuje kliknięcie przycisku "..." przy polu guest
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -359,6 +359,27 @@ namespace WpfApp_Hotel
         public void SetGuestData(string firstName, string lastName)
         {
             _guest.Text = $"{firstName} {lastName}";
+        }
+
+        /// <summary>
+        /// Obsługuje kliknięcie przycisku "..." przy polu room
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>        
+        private void BrowseRooms(object sender, RoutedEventArgs e)
+        {
+            RoomsBrowse roomsBrowse = new RoomsBrowse();
+            roomsBrowse.Show();
+        }
+
+        /// <summary>
+        /// Wstawia do text boxa _guest numer wybranego pokoju z okna RoomsBrowse
+        /// </summary>
+        /// <param name="firstName"></param>
+        /// <param name="lastName"></param>
+        public void SetGuestData(int roomNr)
+        {
+            _room.Text = roomNr.ToString();
         }
     }
 }
