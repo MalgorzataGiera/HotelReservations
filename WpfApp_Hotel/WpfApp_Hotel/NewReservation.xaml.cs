@@ -50,6 +50,29 @@ namespace WpfApp_Hotel
             InitializeComponent();
             _checkIn.Loaded += DatePicker1_Loaded;
             _checkOut.Loaded += DatePicker2_Loaded;
+            using (SqlConnection connection= new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    string query = $"SELECT FirstName, LastName FROM Employees";
+                    SqlCommand command = new SqlCommand(query, connection);
+                    SqlDataReader reader= command.ExecuteReader();
+
+                    List<string> employees = new List<string>();
+                    while(reader.Read())
+                    {
+                        employees.Add(reader["FirstName"].ToString() + " "  + reader["LastName"].ToString());
+                    }
+
+                    _employee.ItemsSource= employees;
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show("Nie udało się połączyć z bazą. " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                
+            }
         }
 
         /// <summary>
@@ -163,6 +186,14 @@ namespace WpfApp_Hotel
                 _employee.Text = string.Empty;
                 _checkIn.SelectedDate = DateTime.Today.AddDays(1);
                 _checkOut.SelectedDate = DateTime.Today.AddDays(2);
+
+                guestName = string.Empty;
+                guestLastName = string.Empty;
+                employeeName = string.Empty;
+                employeeLastName = string.Empty;
+                room = 0;
+                phone = string.Empty;
+                mail= string.Empty;
             }
         }
 
@@ -300,47 +331,6 @@ namespace WpfApp_Hotel
         }
 
         /// <summary>
-        /// Reaguje na opuszczenie text boxa _employee
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void _employee_LostFocus(object sender, RoutedEventArgs e)
-        {
-            _employee.Foreground = Brushes.Red;
-            if (_employee.Text == "")
-            {
-                _employee.Text = string.Empty;
-                _employee.Text = "mandatory field";
-                employee = string.Empty;
-            }
-                
-            else
-            {
-                employee = _employee.Text;
-                var temp = employee.Split(' ');
-                    if(temp.Length == 2)
-                {
-                    employeeName = temp[0];
-                    employeeLastName = temp[1];
-                }
-            }
-            
-        }
-
-        /// <summary>
-        /// Reaguje na kliknięcie text boxa _eployee
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void _employee_GotFocus(object sender, RoutedEventArgs e)
-        {
-            _employee.Foreground = Brushes.Red;
-            if (_employee.Text == "mandatory field")
-                _employee.Text = string.Empty;
-            
-        }
-
-        /// <summary>
         /// Obsługuje kliknięcie przycisku "..." przy polu guest. Otwiera okno dialogowe z listą gości i przypisuje do tekst boxa _guest wybrane imię i nazwisko
         /// </summary>
         /// <param name="sender"></param>
@@ -376,5 +366,19 @@ namespace WpfApp_Hotel
             }
         }
 
+        /// <summary>
+        /// Pozwala na wybranie pracownika, który przyjmuje rezerwację
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void _employee_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(_employee.SelectedItem!= null)
+            {
+                var temp = _employee.SelectedItem.ToString().Split(' ');
+                employeeName = temp[0];
+                employeeLastName = temp[1];
+            }
+        }
     }
 }

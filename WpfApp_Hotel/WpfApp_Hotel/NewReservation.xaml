@@ -82,7 +82,8 @@
 
         <TextBox Grid.Row="5" Grid.Column="1" x:Name="_mail" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_mail_LostFocus" GotFocus="_mail_GotFocus"/>
 
-        <TextBox Grid.Row="6" Grid.Column="1" x:Name="_employee" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_employee_LostFocus" GotFocus="_employee_GotFocus"/>
+        <ComboBox Grid.Row="6" Grid.Column="1" Height="30" x:Name="_employee" SelectionChanged="_employee_SelectionChanged"/>
+        <!--<TextBox Grid.Row="6" Grid.Column="1" x:Name="_employee" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_employee_LostFocus" GotFocus="_employee_GotFocus"/>-->
 
         <Button Grid.Row="7" Grid.Column="2" Content="Add" Style="{StaticResource submitButtonStyle}" Click="AddReservation"/>
 
