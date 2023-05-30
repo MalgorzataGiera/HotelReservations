@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -24,11 +25,19 @@ namespace WpfApp_Hotel
         private string connectionString = "data source=localhost;initial catalog=hotel2;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
         private string[] userQuery;
         private DataTable dataTableDeafault;
-        private string firstName;
-        private string lastName;
 
         /// <summary>
-        /// Tworzy nowe okno pozwalające przeglądać istniejących gości
+        /// Przechuowuje imię wybranego gościa potrzebne do dodania rezerwacji
+        /// </summary>
+        public string GuestName { get; private set; }
+
+        /// <summary>
+        /// Przechuowuje nazwisko wybranego gościa potrzebne do dodania rezerwacji
+        /// </summary>
+        public string GuestLastName { get; set; }
+
+        /// <summary>
+        /// Tworzy nowe okno pozwalające przeglądać listę gości oraz wybierać gościa z listy
         /// </summary>
         public GuestsBrowse()
         {
@@ -147,65 +156,25 @@ namespace WpfApp_Hotel
                 {
                     MessageBox.Show("Wystąpił błąd podczas wyszukiwania gościa: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                
             }
         }
-        
+
         /// <summary>
-        /// Obsługuje zdarzenie podwójnego kliknięcia myszą na gościa. Przekazuje imię i nazwisko do okna dodawania rezerwacji
+        /// Obsługuje zdarzenie kliknięcia przycisku "Confirm". Przekazuje imię i nazwisko do okna dodawania rezerwacji
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void GuestChosen_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        /// <param name="e"></param>        
+        private void ConfirmButton_Click(object sender, RoutedEventArgs e)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            if (dataGrid.SelectedItem != null)
             {
-                try
-                {
-                    connection.Open();
-                    string documentNr = "";
-                    DataRowView rowView = dataGrid.SelectedItem as DataRowView;
-                    if (rowView != null)
-                    {
-                        string columnName = "DocumentNumber";
-                        documentNr = rowView[columnName].ToString();
-
-                        // Zapytanie SQL do pobrania id goscia
-                        string query = $"SELECT FirstName, LastName FROM Guests WHERE DocumentNumber = '{documentNr}'";
-
-                        SqlCommand command = new SqlCommand(query, connection);
-                        command.Parameters.AddWithValue("@SortOption", documentNr);
-                        SqlDataReader reader = command.ExecuteReader();
-
-
-                        // Wypisanie wyników 
-                        while (reader.Read())
-                        {
-                            lastName = reader["LastName"].ToString();
-                            firstName = reader["FirstName"].ToString();
-
-                        }
-                        reader.Close();
-
-                        //Przekazanie danych do NewReservation
-                        NewReservation newReservation = new NewReservation();
-                        newReservation.SetGuestData(firstName, lastName);
-                        newReservation.Show();
-
-                        newReservation.guestName = firstName;
-                        newReservation.guestLastName = lastName;
-
-                    }
-                    else
-                        documentNr = "";
-                }
-                catch (SqlException ex)
-                {
-                    MessageBox.Show("Wystąpił błąd podczas wybierania gościa: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                DataRowView rowView = dataGrid.SelectedItem as DataRowView;
+                GuestName = rowView["FirstName"].ToString();
+                GuestLastName = rowView["LastName"].ToString();
+                DialogResult = true;
             }
+            else
+                MessageBox.Show("Please select a room.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
-
-
     }
 }

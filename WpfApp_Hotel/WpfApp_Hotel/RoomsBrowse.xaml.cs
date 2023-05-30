@@ -23,6 +23,10 @@ namespace WpfApp_Hotel
     {
         private string connectionString = "data source=localhost;initial catalog=hotel2;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
 
+        /// <summary>
+        /// Przechowuje numer wybranego pokoju potrzebny do dodania rezerwacji
+        /// </summary>
+        public string Room { get; private set; }
 
         /// <summary>
         /// Otwiera nowe okno wyświetlające wszystkie pokoje hotelowe
@@ -53,34 +57,20 @@ namespace WpfApp_Hotel
         }
 
         /// <summary>
-        /// Obsługuje podwójne kliknięcie na pokój. Wpisuje numer pokoju do pola _room w oknie dodawania rezerwacji.
+        /// Obsługuje zdarzenie kliknięcia przycisku "Confirm". Przekazuje imię i nazwisko do okna dodawania rezerwacji
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void RoomChosen_MouseDoubleClick(object sender, EventArgs e)
+        /// <param name="e"></param>        
+        private void ConfirmButton_Click(object sender, RoutedEventArgs e)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            if (dataGrid.SelectedItem != null)
             {
-                try
-                {
-                    connection.Open();
-                    int roomNr = 0;
-                    DataRowView rowView = dataGrid.SelectedItem as DataRowView;
-                    if (rowView != null)
-                    {
-                        roomNr = Convert.ToInt32(rowView["RoomNumber"]);
-
-                        NewReservation newReservation = new NewReservation();
-                        newReservation.SetGuestData(roomNr);
-                        newReservation.Show();
-                        newReservation.room = roomNr;
-                    }
-                }
-                catch (SqlException ex)
-                {
-                    MessageBox.Show("Wystąpił błąd podczas wybierania gościa: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                DataRowView rowView = dataGrid.SelectedItem as DataRowView;
+                Room = rowView["RoomNumber"].ToString();
+                DialogResult = true;
             }
+            else
+                MessageBox.Show("Please select a room.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

@@ -341,45 +341,35 @@ namespace WpfApp_Hotel
         }
 
         /// <summary>
-        /// Obsługuje kliknięcie przycisku "..." przy polu guest
+        /// Obsługuje kliknięcie przycisku "..." przy polu guest. Otwiera okno dialogowe z listą gości i przypisuje do tekst boxa _guest wybrane imię i nazwisko
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void BrowseGuests(object sender, RoutedEventArgs e)
+        private void GuestSelectingDialog(object sender, RoutedEventArgs e)
         {
             GuestsBrowse guestsBrowse = new GuestsBrowse();
-            guestsBrowse.Show();
+            if (guestsBrowse.ShowDialog() == true)
+            {
+                _guest.Text = guestsBrowse.GuestName + " " + guestsBrowse.GuestLastName;
+                guestName= guestsBrowse.GuestName;
+                guestLastName= guestsBrowse.GuestLastName;
+            }
         }
 
         /// <summary>
-        /// Wstawia do text boxa _guest imie i nazwisko wybranego gościa z okna GuestBrowse
-        /// </summary>
-        /// <param name="firstName"></param>
-        /// <param name="lastName"></param>
-        public void SetGuestData(string firstName, string lastName)
-        {
-            _guest.Text = $"{firstName} {lastName}";
-        }
-
-        /// <summary>
-        /// Obsługuje kliknięcie przycisku "..." przy polu room
+        /// Obsługuje kliknięcie przycisku "..." przy polu room. Otwiera okno dialogowe z listą pokoi i przypisuje do tekst boxa _room numer wybranego pokoju.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>        
         private void BrowseRooms(object sender, RoutedEventArgs e)
         {
             RoomsBrowse roomsBrowse = new RoomsBrowse();
-            roomsBrowse.Show();
+            if (roomsBrowse.ShowDialog() == true)
+            {
+                _room.Text = roomsBrowse.Room;
+                room = int.Parse(roomsBrowse.Room);
+            }
         }
 
-        /// <summary>
-        /// Wstawia do text boxa _guest numer wybranego pokoju z okna RoomsBrowse
-        /// </summary>
-        /// <param name="firstName"></param>
-        /// <param name="lastName"></param>
-        public void SetGuestData(int roomNr)
-        {
-            _room.Text = roomNr.ToString();
-        }
     }
 }

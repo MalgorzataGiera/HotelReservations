@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp_Hotel"
         mc:Ignorable="d"
-        Title="NewReservation" Height="450" Width="380">
+        Title="NewReservation1" Height="450" Width="380">
     <Grid Margin="10,20,10,20">
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -52,7 +52,7 @@
 
         <TextBox Grid.Column="1" x:Name="_guest" Style="{StaticResource textBoxInsertValue_Style}" LostFocus="_guest_LostFocus" GotFocus="_guest_GotFocus"/>
 
-        <Button Grid.Column="2" Content="..." Style="{StaticResource submitButtonStyle}" Click="BrowseGuests"/>
+        <Button Grid.Column="2" Content="..." Style="{StaticResource submitButtonStyle}" Click="GuestSelectingDialog"/>
 
         <DatePicker Grid.Row="1"  Grid.Column="1" Width="200" x:Name="_checkIn" 
                     Loaded="DatePicker1_Loaded">

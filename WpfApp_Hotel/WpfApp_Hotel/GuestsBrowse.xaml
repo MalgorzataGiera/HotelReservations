@@ -10,6 +10,7 @@
         <Grid.RowDefinitions >
             <RowDefinition Height="40"/>
             <RowDefinition/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -30,7 +31,7 @@
             <Image Source="/searchIcon.png"/>
         </Button>
 
-        <DataGrid Grid.Row="1" Grid.ColumnSpan="6" x:Name="dataGrid" AutoGenerateColumns="False" IsReadOnly="True" MouseDoubleClick="GuestChosen_MouseDoubleClick">
+        <DataGrid Grid.Row="1" Grid.ColumnSpan="6" x:Name="dataGrid" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.Columns>
                 <DataGridTextColumn Width="12,5*" Header="Last Name" Binding="{Binding LastName}"/>
                 <DataGridTextColumn Width="12,5*" Header="First Name" Binding="{Binding FirstName}"/>
@@ -42,5 +43,6 @@
 
             </DataGrid.Columns>
         </DataGrid>
+        <Button Grid.Row="2" Grid.Column="5" x:Name="confirmButton" Content="Confirm" Click="ConfirmButton_Click" Style="{StaticResource submitButtonStyle}"/>
     </Grid>
 </Window>

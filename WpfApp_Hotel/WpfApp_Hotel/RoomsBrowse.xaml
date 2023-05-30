@@ -10,6 +10,7 @@
         <Grid.RowDefinitions >
             <RowDefinition Height="40"/>
             <RowDefinition/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -20,7 +21,7 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <DataGrid Grid.Row="1" Grid.ColumnSpan="6" x:Name="dataGrid" AutoGenerateColumns="False" IsReadOnly="True" MouseDoubleClick="RoomChosen_MouseDoubleClick">
+        <DataGrid Grid.Row="1" Grid.ColumnSpan="6" x:Name="dataGrid" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.Columns>
                 <DataGridTextColumn Width="20*" Header="Room number" Binding="{Binding RoomNumber}"/>
                 <DataGridTextColumn Width="20*" Header="Max no. of guests" Binding="{Binding NumberOfPersons}"/>
@@ -28,5 +29,7 @@
                 <DataGridTextColumn Width="40*" Header="Description" Binding="{Binding Description}" />
             </DataGrid.Columns>
         </DataGrid>
+
+        <Button Grid.Row="2" Grid.Column="5" x:Name="confirmButton" Content="Confirm" Click="ConfirmButton_Click" Style="{StaticResource submitButtonStyle}"/>
     </Grid>
 </Window>
