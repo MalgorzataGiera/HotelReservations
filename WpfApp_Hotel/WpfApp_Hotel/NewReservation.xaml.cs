@@ -351,8 +351,13 @@ namespace WpfApp_Hotel
             if (guestsBrowse.ShowDialog() == true)
             {
                 _guest.Text = guestsBrowse.GuestName + " " + guestsBrowse.GuestLastName;
-                guestName= guestsBrowse.GuestName;
-                guestLastName= guestsBrowse.GuestLastName;
+                _phone.Text = guestsBrowse.Phone;
+                _mail.Text = guestsBrowse.Email;
+
+                guestName = guestsBrowse.GuestName;
+                guestLastName = guestsBrowse.GuestLastName;
+                phone = guestsBrowse.Phone;
+                mail = guestsBrowse.Email;
             }
         }
 

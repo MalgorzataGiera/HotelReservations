@@ -33,13 +33,14 @@
 
         <DataGrid Grid.Row="1" Grid.ColumnSpan="6" x:Name="dataGrid" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.Columns>
-                <DataGridTextColumn Width="12,5*" Header="Last Name" Binding="{Binding LastName}"/>
-                <DataGridTextColumn Width="12,5*" Header="First Name" Binding="{Binding FirstName}"/>
-                <DataGridTextColumn Width="12,5*" Header="PESEL" Binding="{Binding PESEL}" />
-                <DataGridTextColumn Width="12,5*" Header="Document" Binding="{Binding DocumentType}" />
-                <DataGridTextColumn Width="12,5*" Header="Document Nr" Binding="{Binding DocumentNumber}" />
-                <DataGridTextColumn Width="12,5*" Header="City" Binding="{Binding City}" />
-                <DataGridTextColumn Width="12,5*" Header="Phone" Binding="{Binding PhoneNumber}" />
+                <DataGridTextColumn Width="*" Header="Last Name" Binding="{Binding LastName}"/>
+                <DataGridTextColumn Width="*" Header="First Name" Binding="{Binding FirstName}"/>
+                <DataGridTextColumn Width="*" Header="PESEL" Binding="{Binding PESEL}" />
+                <DataGridTextColumn Width="*" Header="Document" Binding="{Binding DocumentType}" />
+                <DataGridTextColumn Width="*" Header="Document Nr" Binding="{Binding DocumentNumber}" />
+                <DataGridTextColumn Width="*" Header="City" Binding="{Binding City}" />
+                <DataGridTextColumn Width="*" Header="Phone" Binding="{Binding PhoneNumber}" />
+                <DataGridTextColumn Width="*" Header="E-mail" Binding="{Binding Email}" />
 
             </DataGrid.Columns>
         </DataGrid>

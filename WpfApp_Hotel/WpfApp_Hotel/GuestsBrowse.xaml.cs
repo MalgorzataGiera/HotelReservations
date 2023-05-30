@@ -34,7 +34,17 @@ namespace WpfApp_Hotel
         /// <summary>
         /// Przechuowuje nazwisko wybranego gościa potrzebne do dodania rezerwacji
         /// </summary>
-        public string GuestLastName { get; set; }
+        public string GuestLastName { get; private set; }
+
+        /// <summary>
+        /// Przechowuje numer telefonu gościa potrzebny do dodanaia rezerwacji
+        /// </summary>
+        public string Phone { get; private set; }
+
+        /// <summary>
+        /// Przechowuje e-mail gościa potrzebny do dodanaia rezerwacji
+        /// </summary>
+        public string Email { get; private set; }
 
         /// <summary>
         /// Tworzy nowe okno pozwalające przeglądać listę gości oraz wybierać gościa z listy
@@ -48,7 +58,7 @@ namespace WpfApp_Hotel
                 try
                 {
                     connection.Open();
-                    string query = $"SELECT LastName, FirstName, PESEL, DocumentType, DocumentNumber, City, PhoneNumber FROM Guests";
+                    string query = $"SELECT LastName, FirstName, PESEL, DocumentType, DocumentNumber, City, PhoneNumber, Email FROM Guests";
                     SqlCommand commandGuestID = new SqlCommand(query, connection);
                     SqlDataReader reader = commandGuestID.ExecuteReader();
 
@@ -131,11 +141,11 @@ namespace WpfApp_Hotel
                     connection.Open();
                     // Zapytanie SQL do pobrania najważniejszych informacji o rezerwacji
                     if (userQuery == null || userQuery.Length == 0)
-                        query = $"SELECT LastName, FirstName, PESEL, DocumentType, DocumentNumber, City, PhoneNumber FROM Guests";
+                        query = $"SELECT LastName, FirstName, PESEL, DocumentType, DocumentNumber, City, PhoneNumber, Email FROM Guests";
 
                     else
                     {
-                        query = $"SELECT LastName, FirstName, PESEL, DocumentType, DocumentNumber, City, PhoneNumber FROM Guests WHERE LastName LIKE '{userQuery[0]}%' OR FirstName LIKE '{userQuery[0]}%'";
+                        query = $"SELECT LastName, FirstName, PESEL, DocumentType, DocumentNumber, City, PhoneNumber, Email FROM Guests WHERE LastName LIKE '{userQuery[0]}%' OR FirstName LIKE '{userQuery[0]}%'";
                     }
 
                     SqlCommand command = new SqlCommand(query, connection);
@@ -171,6 +181,9 @@ namespace WpfApp_Hotel
                 DataRowView rowView = dataGrid.SelectedItem as DataRowView;
                 GuestName = rowView["FirstName"].ToString();
                 GuestLastName = rowView["LastName"].ToString();
+                Phone = rowView["PhoneNumber"].ToString();
+                Email = rowView["Email"].ToString();
+
                 DialogResult = true;
             }
             else
