@@ -157,7 +157,13 @@ namespace WpfApp_Hotel
 
                     if (dataGrid.Items.Count < 1)
                     {
-                        MessageBox.Show("Do you want to add new guest?", "No matching results found", MessageBoxButton.OK);
+                        MessageBoxResult result = MessageBox.Show("Do you want to add new guest?", "No matching results found", MessageBoxButton.OK);
+
+                        if (result == MessageBoxResult.OK)
+                        {
+                            NewGuest newGuest = new NewGuest();
+                            newGuest.Show();
+                        }
                     }
 
                     reader.Close();
@@ -187,7 +193,7 @@ namespace WpfApp_Hotel
                 DialogResult = true;
             }
             else
-                MessageBox.Show("Please select a room.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Please select guest.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

@@ -1,0 +1,107 @@
+﻿<Window x:Class="WpfApp_Hotel.NewGuest"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp_Hotel"
+        mc:Ignorable="d"
+        Title="NewGuest" Height="450" Width="800">
+    <Grid Margin="10,20,10,20">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Style="{StaticResource textBlock_AddReservation_Style}">
+            First name:
+        </TextBlock>
+
+        <TextBlock Grid.Column="2"  Style="{StaticResource textBlock_AddReservation_Style}">
+            Last name:
+        </TextBlock>
+
+        <TextBlock Grid.Row="1" Style="{StaticResource textBlock_AddReservation_Style}">
+            Document type:
+        </TextBlock>
+
+        <TextBlock Grid.Row="1" Grid.Column="2" Style="{StaticResource textBlock_AddReservation_Style}">
+            Document number:
+        </TextBlock>
+        
+        <TextBlock Grid.Row="2" Style="{StaticResource textBlock_AddReservation_Style}">
+            PESEL:
+        </TextBlock>
+
+        <TextBlock Grid.Row="3" Style="{StaticResource textBlock_AddReservation_Style}">
+            Country:
+        </TextBlock>
+        <TextBlock Grid.Row="4" Style="{StaticResource textBlock_AddReservation_Style}">
+            Post Code:
+        </TextBlock>
+        <TextBlock Grid.Row="5" Style="{StaticResource textBlock_AddReservation_Style}">
+            City:
+        </TextBlock>
+        <TextBlock Grid.Row="5" Grid.Column="2" Style="{StaticResource textBlock_AddReservation_Style}">
+            Street:
+        </TextBlock>
+        <TextBlock Grid.Row="6" Style="{StaticResource textBlock_AddReservation_Style}">
+            House no.:
+        </TextBlock>
+        <TextBlock Grid.Row="6" Grid.Column="2" Style="{StaticResource textBlock_AddReservation_Style}">
+            Apartment no.:
+        </TextBlock>
+        <TextBlock Grid.Row="7" Style="{StaticResource textBlock_AddReservation_Style}">
+            Phone:
+        </TextBlock>
+        <TextBlock Grid.Row="7" Grid.Column="2" Style="{StaticResource textBlock_AddReservation_Style}">
+            E-mail:
+        </TextBlock>
+
+        <!-- wprowadzanie danych -->
+
+
+        <TextBox Grid.Column="1" x:Name="_name" Style="{StaticResource textBoxInsertValue_Style}" GotFocus="_name_GotFocus" LostFocus="_name_LostFocus"/>
+        
+        <TextBox Grid.Column="3" x:Name="_lastName" Style="{StaticResource textBoxInsertValue_Style}" GotFocus="_lastName_GotFocus" LostFocus="_lastName_LostFocus"/>
+
+        <ComboBox Grid.Row="1" Grid.Column="1" Height="30" x:Name="_docType" SelectionChanged="_docType_SelectionChanged"/>
+
+        <TextBox Grid.Row="1" Grid.Column="3" x:Name="_docNr" Style="{StaticResource textBoxInsertValue_Style}" GotFocus="_docNr_GotFocus" LostFocus="_docNr_LostFocus"/>
+
+        <TextBox Grid.Row="2" Grid.Column="1" x:Name="_pesel" Style="{StaticResource textBoxInsertValue_Style}" GotFocus="_pesel_GotFocus" LostFocus="_pesel_LostFocus"/>
+
+        <TextBox Grid.Row="3" Grid.Column="1" x:Name="_country" Style="{StaticResource textBoxInsertValue_Style}" GotFocus="_country_GotFocus" LostFocus="_country_LostFocus"/>
+
+        <TextBox Grid.Row="4" Grid.Column="1" x:Name="_postCode" Style="{StaticResource textBoxInsertValue_Style}" GotFocus="_postCode_GotFocus" LostFocus="_postCode_LostFocus"/>
+        
+        <TextBox Grid.Row="5" Grid.Column="1" x:Name="_city" Style="{StaticResource textBoxInsertValue_Style}" GotFocus="_city_GotFocus" LostFocus="_city_LostFocus"/>
+        
+        <TextBox Grid.Row="5" Grid.Column="3" x:Name="_street" Style="{StaticResource textBoxInsertValue_Style}" GotFocus="_street_GotFocus" LostFocus="_street_LostFocus"/>
+        
+        <TextBox Grid.Row="6" Grid.Column="1" x:Name="_house" Style="{StaticResource textBoxInsertValue_Style}" GotFocus="_house_GotFocus" LostFocus="_house_LostFocus"/>
+        
+        <TextBox Grid.Row="6" Grid.Column="3" x:Name="_apartment" Style="{StaticResource textBoxInsertValue_Style}" GotFocus="_apartment_GotFocus" LostFocus="_apartment_LostFocus"/>
+        
+        <TextBox Grid.Row="7" Grid.Column="1" x:Name="_phone" Style="{StaticResource textBoxInsertValue_Style}" GotFocus="_phone_GotFocus" LostFocus="_phone_LostFocus"/>
+        
+        <TextBox Grid.Row="7" Grid.Column="3" x:Name="_mail" Style="{StaticResource textBoxInsertValue_Style}" GotFocus="_mail_GotFocus" LostFocus="_mail_LostFocus"/>
+       
+        <Button Grid.Row="8" Grid.Column="5" Content="Add" Style="{StaticResource submitButtonStyle}" Click="AddNewGuest"/>
+
+    </Grid>
+</Window>
