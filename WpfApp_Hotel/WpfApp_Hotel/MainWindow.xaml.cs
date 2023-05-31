@@ -24,6 +24,8 @@ namespace WpfApp_Hotel
     public partial class MainWindow : Window
     {
         private DispatcherTimer timer;
+        private NewReservation reservationsWindow = new NewReservation();
+        private ShowReservations showReservationsWindow = new ShowReservations();
         public MainWindow()
         {
             InitializeComponent();
@@ -32,9 +34,22 @@ namespace WpfApp_Hotel
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += Timer_Tick;
             timer.Start();
-            
+
+            Closing += MainWindow_Closing;
 
         }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (reservationsWindow != null && reservationsWindow.IsVisible)
+                reservationsWindow.Close();
+
+            if (showReservationsWindow != null && showReservationsWindow.IsVisible)
+                showReservationsWindow.Close();
+
+            Application.Current.Shutdown();
+        }
+
         private void Timer_Tick(object sender, EventArgs e)
         {
             // Pobierz aktualną datę i godzinę
@@ -46,15 +61,18 @@ namespace WpfApp_Hotel
 
         private void NewReserv(object sender, RoutedEventArgs e)
         {
-           
-            NewReservation reservationsWindow = new NewReservation();
+            if (reservationsWindow != null && !reservationsWindow.IsVisible)
+                reservationsWindow = new NewReservation();
+
             reservationsWindow.Show();
         }
-
+        
         private void ShowReservs(object sender, RoutedEventArgs e)
         {
-            ShowReservations reservationsWindow = new ShowReservations();
-            reservationsWindow.Show();
-        }
+            if (showReservationsWindow != null && !showReservationsWindow.IsVisible)
+                showReservationsWindow = new ShowReservations();
+
+            showReservationsWindow.Show();
+        }        
     }
 }
