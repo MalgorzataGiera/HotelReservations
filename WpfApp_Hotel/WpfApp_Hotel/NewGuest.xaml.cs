@@ -47,6 +47,7 @@ namespace WpfApp_Hotel
             docTypes.Add("paszport");
             _docType.ItemsSource = docTypes;
 
+
         }
 
         /// <summary>

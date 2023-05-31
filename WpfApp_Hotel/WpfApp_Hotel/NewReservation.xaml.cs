@@ -159,7 +159,6 @@ namespace WpfApp_Hotel
                         // Zapytanie SQL do dodania rezerwacji
                         string queryAddReservation = $"INSERT INTO Reservations (RoomNumber, GuestID, CheckInDate, CheckOutDate, EmployeeID) VALUES ({room}, {guestID}, '{checkIn}', '{checkOut}', {employeeID})";
                         
-                        
                         commandInsert = new SqlCommand(queryAddReservation, connection);
 
                         //command.ExecuteNonQuery();
@@ -216,10 +215,71 @@ namespace WpfApp_Hotel
             {
                 guest = _guest.Text;
                 var temp = guest.Split(' ');
-                if(temp.Length == 2)
+                if (temp.Length == 2)
                 {
                     guestName = temp[0];
                     guestLastName = temp[1];
+                }
+
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    try
+                    {
+                        connection.Open();
+                        string query = $"SELECT * FROM Guests WHERE FirstName = '{guestName}' AND LastName = '{guestLastName}'";
+
+                        SqlCommand command1 = new SqlCommand(query, connection);
+                        int rowsAffected1 = command1.ExecuteNonQuery();
+
+                        if (rowsAffected1 <= 0)
+                        {
+                            MessageBoxResult result = MessageBox.Show("Do you want to add a new guest?", "Guest does not exist", MessageBoxButton.OK);
+
+                            if (result == MessageBoxResult.OK)
+                            {
+                                NewGuest newGuest = new NewGuest();
+                                newGuest.Closed += NewGuest_Closed;
+                                newGuest.Show();
+                            }
+                        }
+                    }
+                    catch (SqlException ex)
+                    {
+                        MessageBox.Show("Wystąpił błąd podczas dodawania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+        }
+
+        private void NewGuest_Closed(object sender, EventArgs e)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    string query = $"SELECT PhoneNumber, Email, FirstName, LastName FROM Guests WHERE FirstName = '{guestName}' AND LastName = '{guestLastName}'";
+
+                    SqlCommand command1 = new SqlCommand(query, connection);
+                    SqlDataReader reader = command1.ExecuteReader();
+
+                    while(reader.Read())
+                    {
+                        _phone.Text = reader["PhoneNumber"].ToString();
+                        phone = reader["PhoneNumber"].ToString();
+
+                        _mail.Text = reader["Email"].ToString();
+                        mail = reader["Email"].ToString();
+
+                        _guest.Text = reader["FirstName"].ToString() + " " + reader["LastName"].ToString();
+                        guestName = reader["FirstName"].ToString();
+                        guestLastName = reader["LastName"].ToString();
+
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("Wystąpił błąd podczas dodawania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
