@@ -62,6 +62,16 @@
             </DataGrid.Columns>
         </DataGrid>
 
+        <Popup x:Name="reservationPopup">
+            <Border Background="White" BorderBrush="#FF002AAD" BorderThickness="1">
+                <StackPanel Margin="10">
+                    <TextBlock x:Name="popupTextBlock" TextWrapping="Wrap" FontSize="16"/>
+                    <CheckBox x:Name="popupCheckBoxStatus" Content="Confirmed"/>
+                    <CheckBox x:Name="popupCheckBoxSettled" Content="Settled"/>
+                    <Button Content="Close" Style="{StaticResource submitButtonStyle}" HorizontalAlignment="Center" Click="ClosePopup_Click" />
+                </StackPanel>
+            </Border>
+        </Popup>
 
     </Grid>
 </Window>

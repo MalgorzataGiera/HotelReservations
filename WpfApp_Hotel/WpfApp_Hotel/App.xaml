@@ -131,5 +131,15 @@
             <Setter Property="Margin" Value="0,0,15,0"/>
             <Setter Property="Padding" Value="8,0,8,0"/>
         </Style>
+
+        <Style TargetType="{x:Type Popup}">
+            <Setter Property="Placement" Value="Center"/>
+            <Setter Property="StaysOpen" Value="True"/>
+        </Style>
+        
+        <Style TargetType="{x:Type CheckBox}">
+            <Setter Property="Margin" Value="0,3,0,0"/>
+            <Setter Property="FontSize" Value="16"/>
+        </Style>
     </Application.Resources>
 </Application>

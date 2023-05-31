@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Data;
 using System.Data.Entity.Core.Objects;
 using System.Data.SqlClient;
@@ -16,6 +17,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace WpfApp_Hotel
@@ -31,6 +33,10 @@ namespace WpfApp_Hotel
         private DataTable dataTableDeafault;
         private string dateStart;
         private string dateEnd;
+        private string resID = "";
+
+        private string statusCheckBox;
+        private string settledCheckBox;
 
         private DateTime lastDayOfMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddMonths(1).AddDays(-1);
 
@@ -69,6 +75,7 @@ namespace WpfApp_Hotel
             }
 
         }
+
         /// <summary>
         /// Wyświetla szczegółowe informacje o rezeracji
         /// </summary>
@@ -81,7 +88,7 @@ namespace WpfApp_Hotel
                 try
                 {
                     connection.Open();
-                    string resID = "";
+                    
                     DataRowView rowView = dataGrid.SelectedItem as DataRowView;
                     if (rowView != null)
                     {
@@ -95,6 +102,7 @@ namespace WpfApp_Hotel
                         command.Parameters.AddWithValue("@SortOption", resID);
                         SqlDataReader reader = command.ExecuteReader();
 
+                        StringBuilder popupMessageBuilder = new StringBuilder();
                         // Wypisanie wyników 
                         while (reader.Read())
                         {
@@ -113,9 +121,26 @@ namespace WpfApp_Hotel
                             string formattedCheckInDate = checkInDate.ToString("yyyy.MM.dd");
                             string formattedCheckOutDate = checkOutDate.ToString("yyyy.MM.dd");
 
-                            MessageBox.Show($"Guest: {gFirstName} {gLastName} | Reservation from: {formattedCheckInDate} to: {formattedCheckOutDate} | Room nr: {room} | Status: {status} | Settled: {ifSettled} | Reservations accepted by: {eFirstName} {eLastName}");
+                            popupMessageBuilder.AppendLine($"Guest: {gFirstName} {gLastName}");
+                            popupMessageBuilder.AppendLine($"Reservation from: {formattedCheckInDate} to: {formattedCheckOutDate}");
+                            popupMessageBuilder.AppendLine($"Room nr: {room}");
+                            popupMessageBuilder.AppendLine($"Reservations accepted by: {eFirstName} {eLastName}");
+
+                            if (status == "potwierdzona")
+                                popupCheckBoxStatus.IsChecked = true;
+                            else
+                                popupCheckBoxStatus.IsChecked = false;
+
+                            if (ifSettled == "tak")
+                                popupCheckBoxSettled.IsChecked = true;
+                            else
+                                popupCheckBoxSettled.IsChecked = false;
+
                         }
                         reader.Close();
+                        
+                        popupTextBlock.Text = popupMessageBuilder.ToString().TrimEnd();
+                        reservationPopup.IsOpen = true;
                     }
                     else
                         resID = "";
@@ -126,6 +151,46 @@ namespace WpfApp_Hotel
                 }
             }
         }
+
+        /// <summary>
+        /// Reaguje na kliknięcie przycisku "Close" dla popup
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ClosePopup_Click(object sender, RoutedEventArgs e)
+        {
+            if (popupCheckBoxStatus.IsChecked == true)
+                statusCheckBox = "potwierdzona";
+            else
+                statusCheckBox = "niepotwierdzona";
+
+            if (popupCheckBoxSettled.IsChecked == true)
+                settledCheckBox = "tak";
+            else
+                settledCheckBox = "nie";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    string updateQ = $"UPDATE Reservations SET Status = '{statusCheckBox}' WHERE ReservationID = {resID}";
+                    SqlCommand command = new SqlCommand(updateQ, connection);
+                    int rowsAffected1 = command.ExecuteNonQuery();
+
+                    if (rowsAffected1 > 0)
+                    {
+                        MessageBox.Show("Successfully edited");
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("Wystąpił błąd podczas pobierania szczegółowych informacji o rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            reservationPopup.IsOpen = false;
+        }
+
         /// <summary>
         /// Reaguje na kliknięcie text boxa
         /// </summary>
@@ -284,10 +349,6 @@ namespace WpfApp_Hotel
                             if (dataGrid.Items.Count < 1)
                             {
                                 MessageBox.Show("no matching results found data start");
-                                //datePicker1.SelectedDate = DateTime.Today;
-                                //datePicker2.SelectedDate = lastDayOfMonth;
-
-                                //dataGrid.ItemsSource = dataTableDeafault.DefaultView;
                                 
                             }
                         }
@@ -349,10 +410,6 @@ namespace WpfApp_Hotel
                             if (dataGrid.Items.Count < 1)
                             {
                                 MessageBox.Show("no matching results found data koniec");
-                                //datePicker1.SelectedDate = DateTime.Today;
-                                //datePicker2.SelectedDate = lastDayOfMonth;
-
-                                //dataGrid.ItemsSource = dataTableDeafault.DefaultView;
                             }
                         }
                         catch (SqlException ex)
