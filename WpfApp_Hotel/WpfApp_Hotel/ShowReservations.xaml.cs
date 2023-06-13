@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Data;
+using System.Data.Common;
 using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Validation;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,12 +31,10 @@ namespace WpfApp_Hotel
     public partial class ShowReservations : Window
     {
         private List<string> reservationsData = new List<string>();
-        private string connectionString = "data source=localhost;initial catalog=hotel2;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
         private string[] userQuery;
-        private DataTable dataTableDeafault;
-        private string dateStart;
-        private string dateEnd;
-        private string resID = "";
+        private DateTime dateStart;
+        private DateTime dateEnd;
+        private int reservationID;
 
         private string statusCheckBox;
         private string settledCheckBox;
@@ -49,26 +50,33 @@ namespace WpfApp_Hotel
             InitializeComponent();
             datePicker1.Loaded += DatePicker1_Loaded;
             datePicker2.Loaded += DatePicker2_Loaded;
-            dateStart = DateTime.Today.ToString("yyyy.MM.dd");
-            dateEnd = lastDayOfMonth.ToString("yyyy.MM.dd");
-            //datePicker2.Loaded += DatePicker_Loaded;
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            dateStart = DateTime.Today;
+            dateEnd = lastDayOfMonth;
+
+            using (var context = new hotel2Entities())
             {
                 try
                 {
-                    connection.Open();
-                    // Zapytanie SQL do pobrania najważniejszych informacji o rezerwacji
-                    string query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE r.CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}' OR r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}'";
-                    SqlCommand command = new SqlCommand(query, connection);
-                    SqlDataReader reader = command.ExecuteReader();
+                    var results = context.Guests
+                    .Join(context.Reservations,
+                        g => g.GuestID,
+                        r => r.GuestID,
+                        (g, r) => new
+                        {
+                            g.LastName,
+                            g.FirstName,
+                            r.CheckInDate,
+                            r.CheckOutDate,
+                            r.ReservationID
+                        })
+                    .Where(r => (r.CheckInDate >= dateStart && r.CheckInDate <= dateEnd) ||
+                                (r.CheckOutDate >= dateStart && r.CheckOutDate <= dateEnd))
+                    .ToList();
 
-                    dataTableDeafault = new DataTable();
-                    dataTableDeafault.Load(reader);
-                    dataGrid.ItemsSource = dataTableDeafault.DefaultView;
-
-                    reader.Close();
+                    dataGrid.ItemsSource = results;
+                    dataGrid.MouseDoubleClick += dataGrid_MouseDoubleClick;
                 }
-                catch (SqlException ex)
+                catch (DbException ex)
                 {
                     MessageBox.Show("Wystąpił błąd podczas pobierania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
@@ -81,75 +89,60 @@ namespace WpfApp_Hotel
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void reservationsListBox_Click(object sender, MouseButtonEventArgs e)
+        private void dataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            var selectedRow = dataGrid.SelectedItem as dynamic;
+            if (selectedRow != null)
             {
-                try
+                reservationID = selectedRow.ReservationID;
+                StringBuilder popupMessageBuilder = new StringBuilder();
+
+                using (var context = new hotel2Entities())
                 {
-                    connection.Open();
-                    
-                    DataRowView rowView = dataGrid.SelectedItem as DataRowView;
-                    if (rowView != null)
+                    try
                     {
-                        string columnName = "ReservationID";
-                        resID = rowView[columnName].ToString();
 
-                        // Zapytanie SQL do pobrania wszystkich szczegółowych informacji o rezerwacji
-                        string query = $"SELECT r.*, g.FirstName AS gFirstName, g.LastName AS gLastName, e.FirstName AS eFirstName, e.LastName AS eLastName FROM Reservations r JOIN Guests g ON r.GuestID = g.GuestID JOIN Employees e ON r.EmployeeID = e.EmployeeID WHERE r.ReservationID = {resID}";
+                        var result = context.Reservations
+                            .Join(context.Guests, r => r.GuestID, g => g.GuestID,
+                            (r, g) => new { Reservation = r, Guest = g })
+                            .Join(context.Employees, rg => rg.Reservation.EmployeeID, emp => emp.EmployeeID,
+                            (rg, emp) => new { rg.Reservation, rg.Guest, Employee = emp })
+                            .Where(rg => rg.Reservation.ReservationID == reservationID)
+                            .Select(rg => new
+                            {
+                                Reservation = rg.Reservation,
+                                GuestFirstName = rg.Guest.FirstName,
+                                GuestLastName = rg.Guest.LastName,
+                                EmployeeFirstName = rg.Employee.FirstName,
+                                EmployeeLastName = rg.Employee.LastName
+                            })
+                        .FirstOrDefault();
 
-                        SqlCommand command = new SqlCommand(query, connection);
-                        command.Parameters.AddWithValue("@SortOption", resID);
-                        SqlDataReader reader = command.ExecuteReader();
+                        popupMessageBuilder.AppendLine($"Guest: {result.GuestFirstName} {result.GuestLastName}");
+                        popupMessageBuilder.AppendLine($"Reservation from: {result.Reservation.CheckInDate.ToString("yy:MM:dd")} to: {result.Reservation.CheckOutDate.ToString("yy:MM:dd")}");
+                        popupMessageBuilder.AppendLine($"Room nr: {result.Reservation.RoomNumber}");
+                        popupMessageBuilder.AppendLine($"Reservations accepted by: {result.EmployeeFirstName} {result.EmployeeLastName}");
 
-                        StringBuilder popupMessageBuilder = new StringBuilder();
-                        // Wypisanie wyników 
-                        while (reader.Read())
-                        {
-                            string gLastName = reader["gLastName"].ToString();
-                            string gFirstName = reader["gFirstName"].ToString();
-                            DateTime checkInDate = (DateTime)reader["CheckInDate"];
-                            DateTime checkOutDate = (DateTime)reader["CheckOutDate"];
-                            string room = reader["RoomNumber"].ToString();
-                            string status = reader["Status"].ToString();
-                            string eLastName = reader["eLastName"].ToString();
-                            string eFirstName = reader["eFirstName"].ToString();
-                            string ifSettled = reader["IfSettled"].ToString();
-                            string GuestID = reader["GuestID"].ToString();
+                        if (result.Reservation.Status == "potwierdzona")
+                            popupCheckBoxStatus.IsChecked = true;
+                        else
+                            popupCheckBoxStatus.IsChecked = false;
 
-                            // Zmiana formatu daty
-                            string formattedCheckInDate = checkInDate.ToString("yyyy.MM.dd");
-                            string formattedCheckOutDate = checkOutDate.ToString("yyyy.MM.dd");
+                        if (result.Reservation.IfSettled == "tak")
+                            popupCheckBoxSettled.IsChecked = true;
+                        else
+                            popupCheckBoxSettled.IsChecked = false;
 
-                            popupMessageBuilder.AppendLine($"Guest: {gFirstName} {gLastName}");
-                            popupMessageBuilder.AppendLine($"Reservation from: {formattedCheckInDate} to: {formattedCheckOutDate}");
-                            popupMessageBuilder.AppendLine($"Room nr: {room}");
-                            popupMessageBuilder.AppendLine($"Reservations accepted by: {eFirstName} {eLastName}");
-
-                            if (status == "potwierdzona")
-                                popupCheckBoxStatus.IsChecked = true;
-                            else
-                                popupCheckBoxStatus.IsChecked = false;
-
-                            if (ifSettled == "tak")
-                                popupCheckBoxSettled.IsChecked = true;
-                            else
-                                popupCheckBoxSettled.IsChecked = false;
-
-                        }
-                        reader.Close();
-                        
                         popupTextBlock.Text = popupMessageBuilder.ToString().TrimEnd();
                         reservationPopup.IsOpen = true;
                     }
-                    else
-                        resID = "";
-                }
-                catch (SqlException ex)
-                {
-                    MessageBox.Show("Wystąpił błąd podczas pobierania szczegółowych informacji o rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                    catch (DbException ex)
+                    {
+                        MessageBox.Show("Wystąpił błąd podczas pobierania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
+
         }
 
         /// <summary>
@@ -169,23 +162,37 @@ namespace WpfApp_Hotel
             else
                 settledCheckBox = "nie";
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var context = new hotel2Entities())
             {
                 try
                 {
-                    connection.Open();
-                    string updateQ = $"UPDATE Reservations SET Status = '{statusCheckBox}' WHERE ReservationID = {resID}";
-                    SqlCommand command = new SqlCommand(updateQ, connection);
-                    int rowsAffected1 = command.ExecuteNonQuery();
+                    var reservationToUpdate = context.Reservations
+                        .Where(r => r.ReservationID == reservationID)
+                        .FirstOrDefault();
+                        if (reservationToUpdate.Status != statusCheckBox)
+                            reservationToUpdate.Status = statusCheckBox;
+                        if (reservationToUpdate.IfSettled != settledCheckBox)
+                            reservationToUpdate.IfSettled = settledCheckBox;
 
-                    if (rowsAffected1 > 0)
-                    {
-                        MessageBox.Show("Successfully edited");
-                    }
+                        context.SaveChanges();
+                    
+                    
                 }
-                catch (SqlException ex)
+                catch (DbEntityValidationException ex)
                 {
-                    MessageBox.Show("Wystąpił błąd podczas pobierania szczegółowych informacji o rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                    // Obsługa błędów walidacji
+                    foreach (var validationErrors in ex.EntityValidationErrors)
+                    {
+                        foreach (var validationError in validationErrors.ValidationErrors)
+                        {
+                            MessageBox.Show($"Błąd walidacji: {validationError.PropertyName} - {validationError.ErrorMessage}");
+                        }
+                    }
+                    // Dodatkowe działania po obsłudze błędów walidacji
+                }
+                catch (DbException ex)
+                {
+                    MessageBox.Show("Wystąpił błąd: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             reservationPopup.IsOpen = false;
@@ -205,7 +212,6 @@ namespace WpfApp_Hotel
             if (textBox.Text == "Search for guest name...")
             {
                 textBox.Text = string.Empty;
-                //dataGrid.ItemsSource = dataTableDeafault.DefaultView;
             }
                 
         }
@@ -223,7 +229,6 @@ namespace WpfApp_Hotel
             textBox.BorderThickness = new Thickness(3);
             if (string.IsNullOrWhiteSpace(textBox.Text))
             {
-
                 userQuery = null;
                 textBox.Text = "Search for guest name...";
             }
@@ -239,6 +244,67 @@ namespace WpfApp_Hotel
             }
 
         }
+        /// <summary>
+        /// Metoda pomocnicza dla wyszukiwania oraz wybierania przez użytkownika daty
+        /// </summary>
+
+        private void UserQueries()
+        {
+            try
+            {
+                using (var context = new hotel2Entities())
+                {
+                    if (userQuery == null || userQuery.Length == 0)
+                    {
+                        var results = context.Guests
+                                    .Join(context.Reservations, g => g.GuestID, r => r.GuestID,
+                                        (g, r) => new
+                                        {
+                                            g.LastName,
+                                            g.FirstName,
+                                            r.CheckInDate,
+                                            r.CheckOutDate,
+                                            r.ReservationID
+                                        })
+                                     .Where(r => (r.CheckInDate >= dateStart && r.CheckInDate <= dateEnd) ||
+                                        (r.CheckOutDate >= dateStart && r.CheckOutDate <= dateEnd))
+                                     .ToList();
+
+                        dataGrid.ItemsSource = results;
+                    }
+                    else
+                    {
+                        string query1 = userQuery[0];
+                        var results = context.Guests
+                                    .Where(g => (g.LastName.StartsWith(query1) || g.FirstName.StartsWith(query1))
+                                                && g.Reservations.Any(r => (r.CheckInDate >= dateStart && r.CheckInDate <= dateEnd) || (r.CheckOutDate >= dateStart && r.CheckOutDate <= dateEnd)))
+                                    .SelectMany(g => g.Reservations
+                                        .Where(r => r.CheckInDate >= dateStart)
+                                        .Select(r => new
+                                        {
+                                            g.LastName,
+                                            g.FirstName,
+                                            r.CheckInDate,
+                                            r.CheckOutDate,
+                                            r.ReservationID
+                                        }))
+                                    .ToList();
+                        if (results.Any())
+                            dataGrid.ItemsSource = results;
+                        else
+                        {
+                            dataGrid.ItemsSource = null;
+                            MessageBox.Show("no matching results found");
+                        }
+                            
+                    }
+                }
+            }
+            catch (DbException ex)
+            {
+                MessageBox.Show("Wystąpił błąd podczas pobierania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        } 
 
         /// <summary>
         /// Reaguje na kliknięcie przycisku lupy (wyszukiwania)
@@ -247,43 +313,10 @@ namespace WpfApp_Hotel
         /// <param name="e"></param>
         private void Search_Click(object sender, RoutedEventArgs e)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                try
-                {
-                    string query;
-                    connection.Open();
+            dateStart = datePicker1.SelectedDate.Value;
+            dateEnd = datePicker2.SelectedDate.Value;
 
-                    dateStart = datePicker1.SelectedDate.Value.ToString("yyyy.MM.dd");
-                    dateEnd = datePicker2.SelectedDate.Value.ToString("yyyy.MM.dd");
-                    // Zapytanie SQL do pobrania najważniejszych informacji o rezerwacji
-                    if (userQuery == null || userQuery.Length == 0)
-                         query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE r.CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}' OR r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}'";
-                    
-                    else
-                    {
-                        query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE (g.LastName LIKE '{userQuery[0]}%' OR g.FirstName LIKE '{userQuery[0]}%') AND (r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}' OR CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}')";
-                    }
-                    
-                    SqlCommand command = new SqlCommand(query, connection);
-                    SqlDataReader reader = command.ExecuteReader();
-
-                    DataTable dataTable = new DataTable();
-                    dataTable.Load(reader);
-                    dataGrid.ItemsSource = dataTable.DefaultView;
-
-                    if (dataGrid.Items.Count < 1)
-                    {
-                        MessageBox.Show("no matching results found");
-                    }
-
-                    reader.Close();
-                }
-                catch (SqlException ex)
-                {
-                    MessageBox.Show("Wystąpił błąd podczas pobierania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
+            UserQueries();
         }
 
         /// <summary>
@@ -318,48 +351,10 @@ namespace WpfApp_Hotel
             DatePicker datePicker = (DatePicker)sender;
             if(datePicker != null)
             {
-                DateTime selectedDate = datePicker.SelectedDate.Value;
-                if (selectedDate != DateTime.Today)
-                {
-                    dateStart = selectedDate.ToString("yyyy.MM.dd");
-
-                    using (SqlConnection connection = new SqlConnection(connectionString))
-                    {
-                        try
-                        {
-                            connection.Open();
-                            string query;
-                            if (userQuery == null || userQuery.Length == 0)
-                            {
-                                query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE r.CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}' OR r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}'";
-                            }
-                            else
-                            {
-                                query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE (g.LastName LIKE '{userQuery[0]}%' OR g.FirstName LIKE '{userQuery[0]}%') AND (r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}' OR CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}')";
-                            }
-                                
-                            SqlCommand command = new SqlCommand(query, connection);
-                            SqlDataReader reader = command.ExecuteReader();
-
-                            DataTable dataTable = new DataTable();
-                            dataTable.Load(reader);
-                            dataGrid.ItemsSource = dataTable.DefaultView;
-                            reader.Close();
-
-                            if (dataGrid.Items.Count < 1)
-                            {
-                                MessageBox.Show("no matching results found data start");
-                                
-                            }
-                        }
-                        catch (SqlException ex)
-                        {
-                            MessageBox.Show("Wystąpił błąd podczas pobierania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    }
-                }
-                    
+                dateStart = datePicker.SelectedDate.Value;
+                UserQueries();
             }
+                    
         }
 
         /// <summary>
@@ -369,57 +364,13 @@ namespace WpfApp_Hotel
         /// <param name="e"></param>
         private void DatePicker_EndDate_SelectedDateChanged(object sender, RoutedEventArgs e)
         {
-            
             DatePicker datePicker = (DatePicker)sender;
             if (datePicker != null)
             {
-                DateTime selectedDate = datePicker.SelectedDate.Value;
-                if (selectedDate < datePicker1.SelectedDate.Value)
-                {
-                    lastDayOfMonth.ToString("yyyy.MM.dd");
-                    datePicker2.SelectedDate = lastDayOfMonth;
-                }
-
-                if (selectedDate != lastDayOfMonth)
-                {
-                    dateEnd = selectedDate.ToString("yyyy.MM.dd");
-
-                    using (SqlConnection connection = new SqlConnection(connectionString))
-                    {
-                        try
-                        {
-                            connection.Open();
-                            string query;
-                            if (userQuery == null || userQuery.Length == 0)
-                            {
-                                query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE r.CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}' OR r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}'";
-                            }
-                            else
-                            {
-                                query = $"SELECT g.LastName, g.FirstName, r.CheckInDate, r.CheckOutDate, r.ReservationID FROM Guests g JOIN Reservations r ON g.GuestId = r.GuestID WHERE (g.LastName LIKE '{userQuery[0]}%' OR g.FirstName LIKE '{userQuery[0]}%') AND (r.CheckOutDate BETWEEN '{dateStart}' AND '{dateEnd}' OR CheckInDate BETWEEN '{dateStart}' AND '{dateEnd}')";
-                            }
-
-                            SqlCommand command = new SqlCommand(query, connection);
-                            SqlDataReader reader = command.ExecuteReader();
-
-                            DataTable dataTable = new DataTable();
-                            dataTable.Load(reader);
-                            dataGrid.ItemsSource = dataTable.DefaultView;
-                            reader.Close();
-
-                            if (dataGrid.Items.Count < 1)
-                            {
-                                MessageBox.Show("no matching results found data koniec");
-                            }
-                        }
-                        catch (SqlException ex)
-                        {
-                            MessageBox.Show("Wystąpił błąd podczas pobierania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    }
-                }
-
+                dateEnd = datePicker.SelectedDate.Value;
+                UserQueries();
             }
         }
+
     }
 }

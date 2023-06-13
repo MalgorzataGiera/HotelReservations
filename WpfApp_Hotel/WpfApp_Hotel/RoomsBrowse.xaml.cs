@@ -13,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Data.Common;
 
 namespace WpfApp_Hotel
 {
@@ -21,8 +22,6 @@ namespace WpfApp_Hotel
     /// </summary>
     public partial class RoomsBrowse : Window
     {
-        private string connectionString = "data source=localhost;initial catalog=hotel2;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
-
         /// <summary>
         /// Przechowuje numer wybranego pokoju potrzebny do dodania rezerwacji
         /// </summary>
@@ -34,22 +33,15 @@ namespace WpfApp_Hotel
         public RoomsBrowse()
         {
             InitializeComponent();
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var context = new hotel2Entities())
             {
                 try
                 {
-                    connection.Open();
-                    string query = $"SELECT * FROM Rooms";
-
-                    SqlCommand commandRoomNr = new SqlCommand(query, connection);
-                    SqlDataReader reader = commandRoomNr.ExecuteReader();
-
-                    DataTable dataTableDeafault = new DataTable();
-                    dataTableDeafault.Load(reader);
-                    dataGrid.ItemsSource = dataTableDeafault.DefaultView;
-                    reader.Close();
+                    var rooms = context.Rooms
+                        .ToList();
+                    dataGrid.ItemsSource = rooms;
                 }
-                catch (SqlException ex)
+                catch (DbException ex)
                 {
                     MessageBox.Show("Wystąpił błąd podczas wyszukiwania pokoju: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
@@ -63,10 +55,10 @@ namespace WpfApp_Hotel
         /// <param name="e"></param>        
         private void ConfirmButton_Click(object sender, RoutedEventArgs e)
         {
-            if (dataGrid.SelectedItem != null)
+            var selectedRow = dataGrid.SelectedItem as dynamic;
+            if (selectedRow != null)
             {
-                DataRowView rowView = dataGrid.SelectedItem as DataRowView;
-                Room = rowView["RoomNumber"].ToString();
+                Room = selectedRow.RoomNumber.ToString();
                 DialogResult = true;
             }
             else

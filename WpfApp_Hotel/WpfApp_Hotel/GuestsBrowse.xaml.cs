@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WpfApp_Hotel
 {
@@ -22,9 +24,7 @@ namespace WpfApp_Hotel
     /// </summary>
     public partial class GuestsBrowse : Window
     {
-        private string connectionString = "data source=localhost;initial catalog=hotel2;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
         private string[] userQuery;
-        private DataTable dataTableDeafault;
 
         /// <summary>
         /// Przechuowuje imię wybranego gościa potrzebne do dodania rezerwacji
@@ -53,23 +53,24 @@ namespace WpfApp_Hotel
         {
             InitializeComponent();
 
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var context = new hotel2Entities())
             {
                 try
                 {
-                    connection.Open();
-                    string query = $"SELECT LastName, FirstName, PESEL, DocumentType, DocumentNumber, City, PhoneNumber, Email FROM Guests";
-                    SqlCommand commandGuestID = new SqlCommand(query, connection);
-                    SqlDataReader reader = commandGuestID.ExecuteReader();
-
-                    dataTableDeafault = new DataTable();
-                    dataTableDeafault.Load(reader);
-                    dataGrid.ItemsSource = dataTableDeafault.DefaultView;
-
-                    reader.Close();
-                
+                    var results = context.Guests
+                        .Select(g => new
+                        {
+                            g.LastName, g.FirstName,
+                            g.PESEL, 
+                            g.DocumentType,
+                            g.DocumentNumber,
+                            g.City,
+                            g.PhoneNumber, g.Email
+                        })
+                        .ToList();
+                    dataGrid.ItemsSource= results;
                 }
-                catch (SqlException ex)
+                catch (DbException ex)
                 {
                     MessageBox.Show("Wystąpił błąd podczas wyszukiwania gościa: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
@@ -133,42 +134,44 @@ namespace WpfApp_Hotel
         /// <param name="e"></param>
         private void Search_Click(object sender, RoutedEventArgs e)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            
+            if (userQuery != null && userQuery.Length > 0 && !String.IsNullOrWhiteSpace(userQuery[0]))
             {
                 try
                 {
-                    string query;
-                    connection.Open();
-                    // Zapytanie SQL do pobrania najważniejszych informacji o rezerwacji
-                    if (userQuery == null || userQuery.Length == 0)
-                        query = $"SELECT LastName, FirstName, PESEL, DocumentType, DocumentNumber, City, PhoneNumber, Email FROM Guests";
-
-                    else
+                    string query1 = userQuery[0];
+                    using (var context = new hotel2Entities())
                     {
-                        query = $"SELECT LastName, FirstName, PESEL, DocumentType, DocumentNumber, City, PhoneNumber, Email FROM Guests WHERE LastName LIKE '{userQuery[0]}%' OR FirstName LIKE '{userQuery[0]}%'";
-                    }
-
-                    SqlCommand command = new SqlCommand(query, connection);
-                    SqlDataReader reader = command.ExecuteReader();
-
-                    DataTable dataTable = new DataTable();
-                    dataTable.Load(reader);
-                    dataGrid.ItemsSource = dataTable.DefaultView;
-
-                    if (dataGrid.Items.Count < 1)
-                    {
-                        MessageBoxResult result = MessageBox.Show("Do you want to add new guest?", "No matching results found", MessageBoxButton.OK);
-
-                        if (result == MessageBoxResult.OK)
+                        var results = context.Guests
+                            .Where(g => g.LastName.StartsWith(query1)
+                            || g.FirstName.StartsWith(query1))
+                            .Select(g => new
+                            {
+                                g.LastName,
+                                g.FirstName,
+                                g.PESEL,
+                                g.DocumentType,
+                                g.DocumentNumber,
+                                g.City,
+                                g.PhoneNumber,
+                                g.Email
+                            })
+                            .ToList();
+                        dataGrid.ItemsSource = results;
+                        if (results == null)
                         {
-                            NewGuest newGuest = new NewGuest();
-                            newGuest.Show();
+                            MessageBoxResult result = MessageBox.Show("Do you want to add new guest?", "No matching results found", MessageBoxButton.OK);
+
+                            if (result == MessageBoxResult.OK)
+                            {
+                                NewGuest newGuest = new NewGuest();
+                                newGuest.Show();
+                            }
                         }
                     }
 
-                    reader.Close();
                 }
-                catch (SqlException ex)
+                catch (DbException ex)
                 {
                     MessageBox.Show("Wystąpił błąd podczas wyszukiwania gościa: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
@@ -184,11 +187,11 @@ namespace WpfApp_Hotel
         {
             if (dataGrid.SelectedItem != null)
             {
-                DataRowView rowView = dataGrid.SelectedItem as DataRowView;
-                GuestName = rowView["FirstName"].ToString();
-                GuestLastName = rowView["LastName"].ToString();
-                Phone = rowView["PhoneNumber"].ToString();
-                Email = rowView["Email"].ToString();
+                var selectedRow = dataGrid.SelectedItem as dynamic;
+                GuestName = selectedRow.FirstName.ToString();
+                GuestLastName = selectedRow.LastName.ToString();
+                Phone = selectedRow.PhoneNumber.ToString();
+                Email = selectedRow.Email.ToString();
 
                 DialogResult = true;
             }

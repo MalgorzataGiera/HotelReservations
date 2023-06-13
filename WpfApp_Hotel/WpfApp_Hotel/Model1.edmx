@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="hotelModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="hotel2Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Employees">
           <Key>
             <PropertyRef Name="EmployeeID" />
@@ -33,7 +33,12 @@
           <Property Name="LastName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="DocumentType" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="DocumentNumber" Type="varchar" MaxLength="10" Nullable="false" />
-          <Property Name="Address" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="Country" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="City" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PostalCode" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Street" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="HouseNumber" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="ApartmentNumber" Type="nvarchar" MaxLength="10" />
           <Property Name="PhoneNumber" Type="char" MaxLength="13" Nullable="false" />
           <Property Name="PESEL" Type="char" MaxLength="11" />
           <Property Name="Email" Type="varchar" MaxLength="100" />
@@ -173,7 +178,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="hotelModelStoreContainer">
+        <EntityContainer Name="hotel2ModelStoreContainer">
           <EntitySet Name="Employees" EntityType="Self.Employees" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="GuestCars" EntityType="Self.GuestCars" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Guests" EntityType="Self.Guests" Schema="dbo" store:Type="Tables" />
@@ -215,7 +220,7 @@
     </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="hotelModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="hotel2Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="Employees">
           <Key>
             <PropertyRef Name="EmployeeID" />
@@ -246,7 +251,12 @@
           <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="DocumentType" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="DocumentNumber" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Address" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Country" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="City" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PostalCode" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Street" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="HouseNumber" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ApartmentNumber" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <Property Name="PhoneNumber" Type="String" MaxLength="13" FixedLength="true" Unicode="false" Nullable="false" />
           <Property Name="PESEL" Type="String" MaxLength="11" FixedLength="true" Unicode="false" />
           <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
@@ -398,7 +408,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="hotelEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="hotel2Entities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Employees" EntityType="Self.Employees" />
           <EntitySet Name="GuestCars" EntityType="Self.GuestCars" />
           <EntitySet Name="Guests" EntityType="Self.Guests" />
@@ -441,9 +451,9 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="hotelModelStoreContainer" CdmEntityContainer="hotelEntities">
+        <EntityContainerMapping StorageEntityContainer="hotel2ModelStoreContainer" CdmEntityContainer="hotel2Entities">
           <EntitySetMapping Name="Employees">
-            <EntityTypeMapping TypeName="hotelModel.Employees">
+            <EntityTypeMapping TypeName="hotel2Model.Employees">
               <MappingFragment StoreEntitySet="Employees">
                 <ScalarProperty Name="EmployeeID" ColumnName="EmployeeID" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
@@ -456,7 +466,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="GuestCars">
-            <EntityTypeMapping TypeName="hotelModel.GuestCars">
+            <EntityTypeMapping TypeName="hotel2Model.GuestCars">
               <MappingFragment StoreEntitySet="GuestCars">
                 <ScalarProperty Name="LicensePlate" ColumnName="LicensePlate" />
                 <ScalarProperty Name="GuestID" ColumnName="GuestID" />
@@ -464,14 +474,19 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Guests">
-            <EntityTypeMapping TypeName="hotelModel.Guests">
+            <EntityTypeMapping TypeName="hotel2Model.Guests">
               <MappingFragment StoreEntitySet="Guests">
                 <ScalarProperty Name="GuestID" ColumnName="GuestID" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="DocumentType" ColumnName="DocumentType" />
                 <ScalarProperty Name="DocumentNumber" ColumnName="DocumentNumber" />
-                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="PostalCode" ColumnName="PostalCode" />
+                <ScalarProperty Name="Street" ColumnName="Street" />
+                <ScalarProperty Name="HouseNumber" ColumnName="HouseNumber" />
+                <ScalarProperty Name="ApartmentNumber" ColumnName="ApartmentNumber" />
                 <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
                 <ScalarProperty Name="PESEL" ColumnName="PESEL" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
@@ -479,7 +494,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Payments">
-            <EntityTypeMapping TypeName="hotelModel.Payments">
+            <EntityTypeMapping TypeName="hotel2Model.Payments">
               <MappingFragment StoreEntitySet="Payments">
                 <ScalarProperty Name="PaymentID" ColumnName="PaymentID" />
                 <ScalarProperty Name="ReservationID" ColumnName="ReservationID" />
@@ -490,7 +505,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Prepayments">
-            <EntityTypeMapping TypeName="hotelModel.Prepayments">
+            <EntityTypeMapping TypeName="hotel2Model.Prepayments">
               <MappingFragment StoreEntitySet="Prepayments">
                 <ScalarProperty Name="PrepaymentID" ColumnName="PrepaymentID" />
                 <ScalarProperty Name="ReservationID" ColumnName="ReservationID" />
@@ -501,7 +516,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Reservations">
-            <EntityTypeMapping TypeName="hotelModel.Reservations">
+            <EntityTypeMapping TypeName="hotel2Model.Reservations">
               <MappingFragment StoreEntitySet="Reservations">
                 <ScalarProperty Name="ReservationID" ColumnName="ReservationID" />
                 <ScalarProperty Name="RoomNumber" ColumnName="RoomNumber" />
@@ -515,7 +530,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Rooms">
-            <EntityTypeMapping TypeName="hotelModel.Rooms">
+            <EntityTypeMapping TypeName="hotel2Model.Rooms">
               <MappingFragment StoreEntitySet="Rooms">
                 <ScalarProperty Name="RoomNumber" ColumnName="RoomNumber" />
                 <ScalarProperty Name="NumberOfPersons" ColumnName="NumberOfPersons" />
@@ -525,7 +540,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Services">
-            <EntityTypeMapping TypeName="hotelModel.Services">
+            <EntityTypeMapping TypeName="hotel2Model.Services">
               <MappingFragment StoreEntitySet="Services">
                 <ScalarProperty Name="ServiceID" ColumnName="ServiceID" />
                 <ScalarProperty Name="ServiceName" ColumnName="ServiceName" />

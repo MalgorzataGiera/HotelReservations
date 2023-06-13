@@ -52,7 +52,7 @@
             </DatePicker.Resources>
         </DatePicker>
 
-        <DataGrid Grid.Row="1" Grid.ColumnSpan="6" x:Name="dataGrid" AutoGenerateColumns="False" IsReadOnly="True" MouseDoubleClick="reservationsListBox_Click"  >
+        <DataGrid Grid.Row="1" Grid.ColumnSpan="6" x:Name="dataGrid" AutoGenerateColumns="False" IsReadOnly="True" MouseDoubleClick="dataGrid_MouseDoubleClick"  >
             <DataGrid.Columns>
                 <DataGridTextColumn Width ="20*" Header="Last Name" Binding="{Binding LastName}"/>
                 <DataGridTextColumn Width ="20*" Header="First Name" Binding="{Binding FirstName}"/>

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.Common;
+using System.Data.Entity.Validation;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,12 +26,10 @@ namespace WpfApp_Hotel
     /// </summary>
     public partial class NewReservation : Window
     {
-        private string connectionString = "data source=localhost;initial catalog=hotel2;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
-        
         private int employeeID;
         private int guestID;
-        private string checkIn = "";
-        private string checkOut = "";
+        private DateTime checkIn;
+        private DateTime checkOut;
 
         private string guest;
         public string guestName;
@@ -50,29 +51,23 @@ namespace WpfApp_Hotel
             InitializeComponent();
             _checkIn.Loaded += DatePicker1_Loaded;
             _checkOut.Loaded += DatePicker2_Loaded;
-            using (SqlConnection connection= new SqlConnection(connectionString))
+            try
             {
-                try
+                using (var context = new hotel2Entities())
                 {
-                    connection.Open();
-                    string query = $"SELECT FirstName, LastName FROM Employees";
-                    SqlCommand command = new SqlCommand(query, connection);
-                    SqlDataReader reader= command.ExecuteReader();
+                    var employees = context.Employees
+                        .Select(e => e.FirstName + " " + e.LastName)
+                        .ToList();
 
-                    List<string> employees = new List<string>();
-                    while(reader.Read())
-                    {
-                        employees.Add(reader["FirstName"].ToString() + " "  + reader["LastName"].ToString());
-                    }
+                    _employee.ItemsSource = employees;
+                }
 
-                    _employee.ItemsSource= employees;
-                }
-                catch(Exception ex)
-                {
-                    MessageBox.Show("Nie udało się połączyć z bazą. " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                
             }
+            catch (DbException ex)
+            {
+                MessageBox.Show("Nie udało się połączyć z bazą. " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
         }
 
         /// <summary>
@@ -104,81 +99,82 @@ namespace WpfApp_Hotel
         /// <param name="e"></param>
         private void AddReservation(object sender, RoutedEventArgs e)
         {
-            checkIn = _checkIn.SelectedDate.Value.ToString("yyyy.MM.dd");
-
-            checkOut = _checkOut.SelectedDate.Value.ToString("yyyy.MM.dd");
+            checkIn = _checkIn.SelectedDate.Value;
+            checkOut = _checkOut.SelectedDate.Value;
 
             bool canAdd = true;
-
-            SqlCommand commandGuestID;
-            SqlCommand commandEmployeeID;
-            SqlCommand commandInsert;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            try
             {
-                try
+                using (var context = new hotel2Entities())
                 {
-                    connection.Open();
-
                     // Zapytanie SQL do pobrania id gościa
                     if (!String.IsNullOrWhiteSpace(guestName) && !String.IsNullOrWhiteSpace(guestLastName))
                     {
-                        string queryGuestID = $"SELECT GuestID FROM Guests WHERE FirstName = '{guestName}' AND LastName = '{guestLastName}'";
-                        commandGuestID = new SqlCommand(queryGuestID, connection);
-                        SqlDataReader reader = commandGuestID.ExecuteReader();
 
-                        while (reader.Read())
-                        {
-                            guestID = Convert.ToInt32(reader["GuestID"]);
-                        }
-                        reader.Close();
+                        var result = context.Guests
+                        .Where(g => g.FirstName == guestName && g.LastName == guestLastName)
+                        .Select(g => g.GuestID)
+                        .FirstOrDefault();
+                        guestID = result;
+
+
                     }
                     else
                         canAdd = false;
-
 
                     if (!String.IsNullOrWhiteSpace(employeeName) && !String.IsNullOrWhiteSpace(employeeLastName))
                     {
                         // Zapytanie SQL do pobrania id pracownika
-                        string queryEmployeeID = $"SELECT EmployeeID FROM Employees WHERE FirstName = '{employeeName}' AND LastName = '{employeeLastName}'";
-                        commandEmployeeID = new SqlCommand(queryEmployeeID, connection);
-                        SqlDataReader reader = commandEmployeeID.ExecuteReader();
+                        var result = context.Employees
+                            .Where(emp => emp.FirstName == employeeName && emp.LastName == employeeLastName)
+                            .Select(emp => emp.EmployeeID)
+                            .FirstOrDefault();
+                        employeeID= result;
 
-                        while (reader.Read())
-                        {
-                            employeeID = Convert.ToInt32(reader["EmployeeID"]);
-                        }
-                        reader.Close();
                     }
                     else
                         canAdd = false;
 
+
                     if (!String.IsNullOrWhiteSpace(phone) && canAdd == true && room != 0)
                     {
-                       
+
                         // Zapytanie SQL do dodania rezerwacji
-                        string queryAddReservation = $"INSERT INTO Reservations (RoomNumber, GuestID, CheckInDate, CheckOutDate, EmployeeID) VALUES ({room}, {guestID}, '{checkIn}', '{checkOut}', {employeeID})";
-                        
-                        commandInsert = new SqlCommand(queryAddReservation, connection);
-
-                        //command.ExecuteNonQuery();
-                        int rowsAffected = commandInsert.ExecuteNonQuery();
-
-                        if (rowsAffected > 0)
+                        Reservations newReservation = new Reservations
                         {
-                            MessageBox.Show("dodano rezerwacje");
-                        }
+                            RoomNumber = (byte)room,
+                            GuestID = guestID,
+                            CheckInDate = checkIn,
+                            CheckOutDate = checkOut,
+                            EmployeeID = (byte)employeeID,
+                            Status = "niepotwierdzona",
+                            IfSettled = "nie"
+                        };
+
+                        context.Reservations.Add(newReservation);
+                        context.SaveChanges();
+                        MessageBox.Show("dodano rezerwacje");
                     }
                     else
                         MessageBox.Show("Enter all necessery data");
-
                 }
-                catch (SqlException ex)
+            }
+
+
+            catch (DbEntityValidationException ex)
+            {
+                // Obsługa błędów walidacji
+                foreach (var validationErrors in ex.EntityValidationErrors)
                 {
-                    MessageBox.Show("Wystąpił błąd podczas dodawania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                    foreach (var validationError in validationErrors.ValidationErrors)
+                    {
+                        MessageBox.Show($"Błąd walidacji: {validationError.PropertyName} - {validationError.ErrorMessage}");
+                    }
                 }
+            }
 
-                _guest.Text = string.Empty;
+
+            _guest.Text = string.Empty;
                 _room.Text = string.Empty;
                 _phone.Text = string.Empty;
                 _mail.Text = string.Empty;
@@ -192,8 +188,8 @@ namespace WpfApp_Hotel
                 employeeLastName = string.Empty;
                 room = 0;
                 phone = string.Empty;
-                mail= string.Empty;
-            }
+                mail = string.Empty;
+            
         }
 
         /// <summary>
@@ -221,17 +217,15 @@ namespace WpfApp_Hotel
                     guestLastName = temp[1];
                 }
 
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                using (var context = new hotel2Entities())
                 {
                     try
                     {
-                        connection.Open();
-                        string query = $"SELECT * FROM Guests WHERE FirstName = '{guestName}' AND LastName = '{guestLastName}'";
+                        var gResult = context.Guests
+                            .Where(g => g.FirstName== guestName && g.LastName == guestLastName)
+                            .FirstOrDefault();
 
-                        SqlCommand command1 = new SqlCommand(query, connection);
-                        int rowsAffected1 = command1.ExecuteNonQuery();
-
-                        if (rowsAffected1 <= 0)
+                        if( gResult == null)
                         {
                             MessageBoxResult result = MessageBox.Show("Do you want to add a new guest?", "Guest does not exist", MessageBoxButton.OK);
 
@@ -243,7 +237,7 @@ namespace WpfApp_Hotel
                             }
                         }
                     }
-                    catch (SqlException ex)
+                    catch (DbException ex)
                     {
                         MessageBox.Show("Wystąpił błąd podczas dodawania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
@@ -253,31 +247,24 @@ namespace WpfApp_Hotel
 
         private void NewGuest_Closed(object sender, EventArgs e)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var context = new hotel2Entities())
             {
                 try
                 {
-                    connection.Open();
-                    string query = $"SELECT PhoneNumber, Email, FirstName, LastName FROM Guests WHERE FirstName = '{guestName}' AND LastName = '{guestLastName}'";
-
-                    SqlCommand command1 = new SqlCommand(query, connection);
-                    SqlDataReader reader = command1.ExecuteReader();
-
-                    while(reader.Read())
-                    {
-                        _phone.Text = reader["PhoneNumber"].ToString();
-                        phone = reader["PhoneNumber"].ToString();
-
-                        _mail.Text = reader["Email"].ToString();
-                        mail = reader["Email"].ToString();
-
-                        _guest.Text = reader["FirstName"].ToString() + " " + reader["LastName"].ToString();
-                        guestName = reader["FirstName"].ToString();
-                        guestLastName = reader["LastName"].ToString();
-
-                    }
+                    var guestData = context.Guests
+                        .Where(g => g.FirstName == guestName && g.LastName == guestLastName)
+                        .Select(g => new
+                        {
+                            phone = g.PhoneNumber,
+                            _phoneNumber = g.PhoneNumber,
+                            mail = g.Email,
+                            _mail= g.Email,
+                            guestName = g.FirstName,                            
+                            guestLastName = g.LastName,
+                            _guest = g.FirstName + " " + g.LastName                            
+                        });
                 }
-                catch (SqlException ex)
+                catch (DbException ex)
                 {
                     MessageBox.Show("Wystąpił błąd podczas dodawania rezerwacji: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                 }

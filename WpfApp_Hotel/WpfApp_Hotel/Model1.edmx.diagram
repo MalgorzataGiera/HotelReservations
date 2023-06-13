@@ -4,22 +4,22 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="729a73062039446f945422a8ab2775a1" Name="Diagram1">
-        <EntityTypeShape EntityType="hotelModel.Employees" Width="1.5" PointX="3.75" PointY="1.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="hotelModel.GuestCars" Width="1.5" PointX="3" PointY="5.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="hotelModel.Guests" Width="1.5" PointX="0.75" PointY="4.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="hotelModel.Payments" Width="1.5" PointX="8.25" PointY="2.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="hotelModel.Prepayments" Width="1.5" PointX="8.25" PointY="5.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="hotelModel.Reservations" Width="1.5" PointX="6" PointY="4.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="hotelModel.Rooms" Width="1.5" PointX="3.75" PointY="8.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="hotelModel.Services" Width="1.5" PointX="8.25" PointY="8.375" IsExpanded="true" />
-        <AssociationConnector Association="hotelModel.FK__Reservati__Emplo__4316F928" ManuallyRouted="false" />
-        <AssociationConnector Association="hotelModel.FK__GuestCars__Guest__45F365D3" ManuallyRouted="false" />
-        <AssociationConnector Association="hotelModel.FK__Reservati__Guest__4222D4EF" ManuallyRouted="false" />
-        <AssociationConnector Association="hotelModel.FK__Payments__Reserv__46E78A0C" ManuallyRouted="false" />
-        <AssociationConnector Association="hotelModel.FK__Prepaymen__Reser__44FF419A" ManuallyRouted="false" />
-        <AssociationConnector Association="hotelModel.FK__Reservati__RoomN__412EB0B6" ManuallyRouted="false" />
-        <AssociationConnector Association="hotelModel.FK__Services__Reserv__440B1D61" ManuallyRouted="false" />
+      <Diagram DiagramId="7f54b32272e14dc1af926f47e15138c3" Name="Diagram1">
+        <EntityTypeShape EntityType="hotel2Model.Employees" Width="1.5" PointX="3.75" PointY="1.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="hotel2Model.GuestCars" Width="1.5" PointX="3" PointY="5.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="hotel2Model.Guests" Width="1.5" PointX="0.75" PointY="4.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="hotel2Model.Payments" Width="1.5" PointX="8.25" PointY="2.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="hotel2Model.Prepayments" Width="1.5" PointX="8.25" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="hotel2Model.Reservations" Width="1.5" PointX="6" PointY="4.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="hotel2Model.Rooms" Width="1.5" PointX="3.75" PointY="8.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="hotel2Model.Services" Width="1.5" PointX="8.25" PointY="8.375" IsExpanded="true" />
+        <AssociationConnector Association="hotel2Model.FK__Reservati__Emplo__4316F928" ManuallyRouted="false" />
+        <AssociationConnector Association="hotel2Model.FK__GuestCars__Guest__45F365D3" ManuallyRouted="false" />
+        <AssociationConnector Association="hotel2Model.FK__Reservati__Guest__4222D4EF" ManuallyRouted="false" />
+        <AssociationConnector Association="hotel2Model.FK__Payments__Reserv__46E78A0C" ManuallyRouted="false" />
+        <AssociationConnector Association="hotel2Model.FK__Prepaymen__Reser__44FF419A" ManuallyRouted="false" />
+        <AssociationConnector Association="hotel2Model.FK__Reservati__RoomN__412EB0B6" ManuallyRouted="false" />
+        <AssociationConnector Association="hotel2Model.FK__Services__Reserv__440B1D61" ManuallyRouted="false" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

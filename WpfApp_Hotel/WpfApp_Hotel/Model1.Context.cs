@@ -13,10 +13,10 @@ namespace WpfApp_Hotel
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class hotelEntities : DbContext
+    public partial class hotel2Entities : DbContext
     {
-        public hotelEntities()
-            : base("name=hotelEntities")
+        public hotel2Entities()
+            : base("name=hotel2Entities")
         {
         }
     

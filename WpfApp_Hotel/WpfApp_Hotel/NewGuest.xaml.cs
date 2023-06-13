@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Validation;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -21,7 +22,6 @@ namespace WpfApp_Hotel
     /// </summary>
     public partial class NewGuest : Window
     {
-        private string connectionString = "data source=localhost;initial catalog=hotel2;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
         private bool canConvert = false;
 
         private string name;
@@ -92,7 +92,6 @@ namespace WpfApp_Hotel
                     name = char.ToUpper(name[0]) + name.Substring(1).ToLower();
                     textBox.Foreground = Brushes.Black;
                     textBox.Text = name;
-                    name = $"'{char.ToUpper(name[0])}{name.Substring(1).ToLower()}'";
                     
                 }
                 else
@@ -151,7 +150,6 @@ namespace WpfApp_Hotel
                     lastName = char.ToUpper(lastName[0]) + lastName.Substring(1).ToLower();
                     textBox.Foreground = Brushes.Black;
                     textBox.Text = lastName;
-                    lastName = $"'{char.ToUpper(lastName[0])}{lastName.Substring(1).ToLower()}'";
                 }
                 else
                 {
@@ -219,7 +217,6 @@ namespace WpfApp_Hotel
                 {
                     textBox.Foreground = Brushes.Black;
                     textBox.Text = docNr;
-                    docNr = $"'{docNr}'";
                 }
                 else
                 {
@@ -269,7 +266,6 @@ namespace WpfApp_Hotel
                 {
                     textBox.Foreground = Brushes.Black;
                     textBox.Text = pesel;
-                    pesel = $"'{pesel}'";
                 }
                 else
                 {
@@ -321,7 +317,6 @@ namespace WpfApp_Hotel
                     country = char.ToUpper(country[0]) + country.Substring(1).ToLower();
                     textBox.Foreground = Brushes.Black;
                     textBox.Text = country;
-                    country = $"'{char.ToUpper(country[0])}{country.Substring(1).ToLower()}'";
                 }
                 else
                 {
@@ -371,7 +366,6 @@ namespace WpfApp_Hotel
                 {
                     textBox.Foreground = Brushes.Black;
                     textBox.Text = postCode;
-                    postCode = $"'{postCode}'";
                 }
                 else
                 {
@@ -422,7 +416,6 @@ namespace WpfApp_Hotel
                     city = char.ToUpper(city[0]) + city.Substring(1).ToLower();
                     textBox.Foreground = Brushes.Black;
                     textBox.Text = city;
-                    city = $"'{char.ToUpper(city[0])}{city.Substring(1).ToLower()}'";
                 }
                 else
                 {
@@ -474,7 +467,6 @@ namespace WpfApp_Hotel
                     street = char.ToUpper(street[0]) + street.Substring(1).ToLower();
                     textBox.Foreground = Brushes.Black;
                     textBox.Text = street;
-                    street = $"'{char.ToUpper(street[0])}{street.Substring(1).ToLower()}'";
                 }
                 else
                 {
@@ -525,7 +517,6 @@ namespace WpfApp_Hotel
                 {
                     textBox.Foreground = Brushes.Black;
                     textBox.Text = house;
-                    house = $"'{house}'";
                 }
                 else
                 {
@@ -576,7 +567,6 @@ namespace WpfApp_Hotel
                 {
                     textBox.Foreground = Brushes.Black;
                     textBox.Text = apartment;
-                    apartment = $"'{apartment}'";
                 }
                 else
                 {
@@ -609,16 +599,20 @@ namespace WpfApp_Hotel
             if (!String.IsNullOrEmpty(textBox.Text))
             {
                 var temp = textBox.Text.Trim().ToCharArray();
-                foreach (char c in temp)
+                if (temp[0] == '+')
+                    phone += temp[0].ToString();
+                if (Char.IsNumber(temp[1]))
+                    phone += temp[1].ToString();
+                if (Char.IsNumber(temp[2]))
+                    phone += temp[2].ToString();
+                if (temp[3] == ' ')
+                    phone += temp[3].ToString();
+                for (int i = 4; i < temp.Length; i++)
                 {
-                    if (_phone.Text[0] == '+')
-                        phone += c;
-                    else if (_phone.Text[3] == ' ')
-                        phone += c;
-                    else if (Char.IsNumber(c))
+                    if (Char.IsDigit(temp[i]))
                     {
                         canConvert = true;
-                        phone += c;
+                        phone += temp[i];
                     }
                     else
                     {
@@ -630,7 +624,6 @@ namespace WpfApp_Hotel
                 {
                     textBox.Foreground = Brushes.Black;
                     textBox.Text = phone;
-                    phone = $"'{phone}'";
                 }
                 else
                 {
@@ -680,7 +673,6 @@ namespace WpfApp_Hotel
                 {
                     textBox.Foreground = Brushes.Black;
                     textBox.Text = mail;
-                    mail = $"'{mail}'";
                 }
                 else
                 {
@@ -698,37 +690,49 @@ namespace WpfApp_Hotel
         /// <param name="e"></param>
         private void AddNewGuest(object sender, RoutedEventArgs e)
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (var context = new hotel2Entities())
             {
                 try
                 {
-                    connection.Open();
-                    string query = "";
-                    MessageBox.Show(docType);
-                    if (String.IsNullOrEmpty(apartment)) apartment = "null";
-                    if (String.IsNullOrEmpty(pesel)) pesel = "null";
-                    if (String.IsNullOrEmpty(mail)) mail = "null";
+                    if (String.IsNullOrEmpty(apartment)) apartment = null;
+                    if (String.IsNullOrEmpty(pesel)) pesel = null;
+                    if (String.IsNullOrEmpty(mail)) mail = null;
 
                     if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(lastName) && !String.IsNullOrEmpty(docType) && !String.IsNullOrEmpty(docNr) && !String.IsNullOrEmpty(country) && !String.IsNullOrEmpty(postCode) && !String.IsNullOrEmpty(city) && !String.IsNullOrEmpty(street) && !String.IsNullOrEmpty(house) && !String.IsNullOrEmpty(phone))
                     {
-                        query = $"INSERT INTO Guests (FirstName, LastName, DocumentType, DocumentNumber, Country, City, PostalCode, Street, HouseNumber, ApartmentNumber, PhoneNumber, PESEL, Email) VALUES ({name}, {lastName}, '{docType}', {docNr}, {country}, {postCode}, {city}, {street}, {house}, {apartment}, {phone}, {pesel}, {mail})";
-
-                        SqlCommand commandInsert = new SqlCommand(query, connection);
-
-                        //command.ExecuteNonQuery();
-                        int rowsAffected = commandInsert.ExecuteNonQuery();
-
-                        if (rowsAffected > 0)
+                        Guests newGuest = new Guests
                         {
-                            MessageBox.Show("Guest added successfully");
-                        }
+                            FirstName = name,
+                            LastName = lastName,
+                            DocumentType = docType,
+                            DocumentNumber = docNr,
+                            Country = country,
+                            City = city,
+                            PostalCode = postCode,
+                            Street = street,
+                            HouseNumber = house,
+                            ApartmentNumber = apartment,
+                            PhoneNumber = phone,
+                            PESEL = pesel,
+                            Email = mail
+                        };
+                        context.Guests.Add(newGuest);
+                        context.SaveChanges();
+
+                        MessageBox.Show("Guest added successfully");
                     }
                     else
                         MessageBox.Show("Enter all necessery data");
                 }
-                catch (SqlException ex)
+                catch (DbEntityValidationException ex)
                 {
-                    MessageBox.Show("Wystąpił błąd podczas dodawania nowego gościa: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                    foreach (var validationErrors in ex.EntityValidationErrors)
+                    {
+                        foreach (var validationError in validationErrors.ValidationErrors)
+                        {
+                            MessageBox.Show($"Błąd walidacji: {validationError.PropertyName} - {validationError.ErrorMessage}");
+                        }
+                    }
                 }
 
                 name = string.Empty;
@@ -758,7 +762,6 @@ namespace WpfApp_Hotel
                 _apartment.Text = string.Empty;
                 _phone.Text = string.Empty;
                 _mail.Text = string.Empty;
-
 
             }
         }
