@@ -1,0 +1,159 @@
+CREATE DATABASE hotel2
+GO
+USE hotel2
+GO
+
+-- Tworzenie tabel
+CREATE TABLE Employees (
+	EmployeeID TINYINT PRIMARY KEY IDENTITY(1,1),
+	FirstName NVARCHAR(50) NOT NULL,
+	LastName NVARCHAR(50) NOT NULL,
+	PhoneNumber CHAR(9) NOT NULL CHECK (PhoneNumber LIKE '[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'),
+	Email VARCHAR(100) NOT NULL,
+	PESEL CHAR(11) NOT NULL,
+	Position NVARCHAR(50) NOT NULL CHECK (Position = 'recepcjonista' OR Position = 'menager')
+)
+
+CREATE TABLE Rooms (
+	RoomNumber TINYINT NOT NULL  PRIMARY KEY,
+	NumberOfPersons TINYINT NOT NULL CHECK (NumberOfPersons = 1 OR NumberOfPersons = 2 OR NumberOfPersons = 3),
+	Price DECIMAL NOT NULL,
+	Description NVARCHAR(255) NULL
+)
+
+CREATE TABLE Guests (
+	GuestID INT IDENTITY(1,1) PRIMARY KEY ,
+	FirstName NVARCHAR(50) NOT NULL,
+	LastName NVARCHAR(50) NOT NULL,
+	DocumentType NVARCHAR(20) NOT NULL CHECK (DocumentType = 'dowód osobisty' OR DocumentType = 'paszport'),
+	DocumentNumber VARCHAR(10) NOT NULL,
+	Country NVARCHAR(50) NOT NULL,
+    	City NVARCHAR(50) NOT NULL,
+    	PostalCode VARCHAR(10) NOT NULL,
+    	Street NVARCHAR(100) NOT NULL,
+    	HouseNumber NVARCHAR(10) NOT NULL,
+    	ApartmentNumber NVARCHAR(10) NULL,
+	PhoneNumber CHAR(13) NOT NULL CHECK (PhoneNumber LIKE '[+][0-9][0-9][ ][1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'),
+	PESEL CHAR(11) NULL, 
+	Email VARCHAR(100) NULL
+)
+
+CREATE TABLE Reservations (
+	ReservationID INT  IDENTITY(1,1) PRIMARY KEY,
+	RoomNumber TINYINT NOT NULL,
+	GuestID INT NOT NULL,
+	CheckInDate DATE NOT NULL DEFAULT GETDATE() CHECK(CheckInDate >= GETDATE()),
+	CheckOutDate DATE NOT NULL DEFAULT GETDATE()+1 CHECK(CheckOutDate >= GETDATE()+1),
+	Status NVARCHAR(20) NOT NULL CHECK (Status = 'potwierdzona' OR Status = 'odwołana' OR Status = 'niepotwierdzona') DEFAULT 'niepotwierdzona',
+	EmployeeID TINYINT NOT NULL,
+	IfSettled CHAR(3) NOT NULL CHECK (IfSettled = 'tak' OR IfSettled = 'nie') DEFAULT 'nie'
+)
+
+CREATE TABLE Services (
+	ServiceID INT PRIMARY KEY IDENTITY(1,1),
+	ServiceName NVARCHAR(50) NOT NULL,
+	ReservationID INT NOT NULL,
+	Price DECIMAL NOT NULL
+)
+
+CREATE TABLE Prepayments (
+	PrepaymentID INT PRIMARY KEY IDENTITY(1,1),
+	ReservationID INT NOT NULL,
+	PaymentMethod NVARCHAR(50) NOT NULL CHECK (PaymentMethod = 'karta' OR PaymentMethod = 'gotówka'),
+	Amount DECIMAL NOT NULL,
+	PaymentDate DATE NOT NULL
+)
+
+CREATE TABLE Payments (
+	PaymentID INT PRIMARY KEY IDENTITY(1,1),
+	ReservationID INT NOT NULL,
+	PaymentMethod NVARCHAR(50) NOT NULL CHECK (PaymentMethod = 'karta' OR PaymentMethod = 'gotówka'),
+	Amount DECIMAL NOT NULL,
+	PaymentDate DATE NOT NULL CHECK (PaymentDate >= GETDATE())
+)
+
+CREATE TABLE GuestCars (
+	LicensePlate VARCHAR(15) PRIMARY KEY,
+	GuestID INT NOT NULL
+)
+
+GO
+
+-- Tworzenie relacji między tabelami
+ALTER TABLE Reservations
+ADD FOREIGN KEY (RoomNumber) REFERENCES Rooms(RoomNumber)
+
+ALTER TABLE Reservations
+ADD FOREIGN KEY (GuestID) REFERENCES Guests(GuestID)
+
+ALTER TABLE Reservations
+ADD FOREIGN KEY (EmployeeID) REFERENCES Employees(EmployeeID)
+
+ALTER TABLE Services
+ADD FOREIGN KEY (ReservationID) REFERENCES Reservations(ReservationID)
+
+ALTER TABLE Prepayments
+ADD FOREIGN KEY (ReservationID) REFERENCES Reservations(ReservationID)
+
+ALTER TABLE GuestCars
+ADD FOREIGN KEY (GuestID) REFERENCES Guests(GuestID)
+
+ALTER TABLE Payments
+ADD FOREIGN KEY (ReservationID) REFERENCES Reservations(ReservationID)
+
+GO
+
+-- Dodawanie rekordów
+INSERT INTO Employees (FirstName, LastName, PhoneNumber, Email, PESEL, Position)
+VALUES	('Katarzyna', 'Nowak', '542368521', 'k.nowak@hotel.com', '02347534863', 'menager'),
+	('Joanna', 'Choiniak', '658421795', 'j.choiniak@hotel.com', '87157165894', 'recepcjonista'),
+	('Dariusz', 'Pochyły', '548712569', 'd.pochyly@hotel.com', '97418562488', 'recepcjonista')
+GO
+
+INSERT INTO Rooms (RoomNumber, NumberOfPersons, Price, Description)
+VALUES	( 1, 2, 240.00, 'Standard double room, first floor'),	
+	(2, 2, 240.00, 'Standard double room, first floor'),
+	( 3, 1, 130.00, 'Standard single room, first floor'),
+	(4, 1, 130.00, 'Standard single room, first floor'),
+	(5, 3, 360.00, 'Standard triple room, first floor')
+GO
+SELECT * FROM Reservations
+INSERT INTO Guests (FirstName, LastName, DocumentType, DocumentNumber, Country, City, PostalCode, Street, HouseNumber, ApartmentNumber, PhoneNumber, PESEL, Email)
+VALUES	('John', 'Smith','paszport', 'ASD12345', 'USA', 'Chicago', '60021', 'Oak St', '127', '22', '+01 552515522', null, 'john.smith@email.com'),
+	('Witold', 'Prosty','dowód osobisty', 'ASD 412345', 'Poland', 'Kraków', '31320', 'Warszawska', '386a', '10', '+48 562487562', '21562548756', 'witpro@email.com'),
+	('Wiktoria', 'Chudy', 'dowód osobisty', 'RDD 912345',  'Poland', 'Kielce', '20230', 'Strzelecka', '23', null,'+48 546852145', '21562548757', 'chudy54@email.com'),
+	('Sara', 'Strojna', 'dowód osobisty', 'QAD 712345', 'Poland', 'Bydgoszcz', '99112', 'Zabłocie', '45', null, '+48 966665478', '21562548758', 'sara123@email.com')
+GO
+
+INSERT INTO Reservations (RoomNumber, GuestID, CheckInDate, CheckOutDate, Status, EmployeeID, IfSettled)
+VALUES	(1, 1, '2023-12-01', '2023-12-03', 'potwierdzona', 1, 'nie'),
+	(2, 2, '2023-11-02', '2023-11-04', 'potwierdzona', 1, 'tak'),
+	(3, 3, '2023-11-01', '2023-11-03', 'potwierdzona', 2,'nie'),
+	(5, 4, '2023-12-01', '2023-12-03', 'odwołana', 1,'nie')
+GO
+
+INSERT INTO Services (ServiceName, ReservationID, Price)
+VALUES	('Room service', 2, 30.00),
+	('Laundry service', 2, 50.00),
+	('Spa service', 2, 80.00), 
+	('Room service', 2, 30.00),
+	('Spa service', 4, 80.00)
+GO
+
+INSERT INTO Prepayments (ReservationID, PaymentMethod, Amount, PaymentDate)
+VALUES	(2, 'karta', '120.00', '2023-01-30'),
+	(2, 'gotówka', '100.00', '2023-02-21'),
+	(3, 'karta', '100.00', '2023-03-24')
+GO
+----------------------------------------------------------------------------------
+INSERT INTO Payments (ReservationID, PaymentMethod, Amount, PaymentDate)
+VALUES	(2, 'karta', '600.00', '2023-07-03'),
+	(2, 'gotówka', '540.00', '2023-08-21'),
+	(3, 'karta', '160.00', '2023-12-03')
+GO
+----------------------------------------------------------------------------------
+INSERT INTO GuestCars (LicensePlate, GuestID)
+VALUES	('RTV 965456', 1),
+	('SCX 985678', 4),
+	('QPO 256934', 3)
+GO
