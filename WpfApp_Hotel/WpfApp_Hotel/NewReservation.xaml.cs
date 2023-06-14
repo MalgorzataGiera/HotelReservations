@@ -79,6 +79,7 @@ namespace WpfApp_Hotel
         {
             DatePicker datePicker = (DatePicker)sender;
             datePicker.SelectedDate = DateTime.Today.AddDays(1);
+            checkIn = DateTime.Today.AddDays(1);
         }
 
         /// <summary>
@@ -405,7 +406,9 @@ namespace WpfApp_Hotel
         /// <param name="e"></param>        
         private void BrowseRooms(object sender, RoutedEventArgs e)
         {
-            RoomsBrowse roomsBrowse = new RoomsBrowse();
+            checkIn = _checkIn.SelectedDate.Value;
+            checkOut = _checkOut.SelectedDate.Value;
+            RoomsBrowse roomsBrowse = new RoomsBrowse(checkIn, checkOut);
             if (roomsBrowse.ShowDialog() == true)
             {
                 _room.Text = roomsBrowse.Room;

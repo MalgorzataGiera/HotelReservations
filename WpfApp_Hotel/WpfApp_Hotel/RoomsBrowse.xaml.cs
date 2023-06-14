@@ -30,21 +30,23 @@ namespace WpfApp_Hotel
         /// <summary>
         /// Otwiera nowe okno wyświetlające wszystkie pokoje hotelowe
         /// </summary>
-        public RoomsBrowse()
+        public RoomsBrowse(DateTime checkIn, DateTime checkOut)
         {
             InitializeComponent();
+
             using (var context = new hotel2Entities())
             {
-                try
-                {
-                    var rooms = context.Rooms
-                        .ToList();
-                    dataGrid.ItemsSource = rooms;
-                }
-                catch (DbException ex)
-                {
-                    MessageBox.Show("Wystąpił błąd podczas wyszukiwania pokoju: " + ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                var reservedRooms = context.Reservations
+                    .Where(r => (r.CheckInDate >= checkIn && r.CheckInDate <= checkOut) ||
+                                        (r.CheckOutDate >= checkIn && r.CheckOutDate <= checkOut))
+                    .Select(r => r.RoomNumber)
+                    .ToList();
+
+                var availableRooms = context.Rooms
+                    .Where(room => !reservedRooms.Contains(room.RoomNumber))
+                    .ToList();
+
+                dataGrid.ItemsSource = availableRooms;
             }
         }
 
